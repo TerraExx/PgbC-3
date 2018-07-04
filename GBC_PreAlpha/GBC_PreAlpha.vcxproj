@@ -132,6 +132,12 @@
     <ClInclude Include="MemoryManagementUnit.h" />
     <ClInclude Include="Memory_Info.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\Desktop\Gameboy (LR35902) OPCODES.htm">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\..\Downloads\DMG_ROM.bin" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

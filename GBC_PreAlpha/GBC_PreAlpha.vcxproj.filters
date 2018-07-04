@@ -57,4 +57,12 @@
       <Filter>Header Files\CPU</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\..\Downloads\DMG_ROM.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\..\Desktop\Gameboy (LR35902) OPCODES.htm">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
 </Project>

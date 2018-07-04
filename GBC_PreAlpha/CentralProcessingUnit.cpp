@@ -134,6 +134,7 @@ void CentralProcessingUnit::decodeExec8bit(unsigned char &OpCode)
 	unsigned char d8;
 	unsigned char d16;
 
+	// execute
 	switch (OpCode)
 	{
 	case JR_NZ_r8:
