@@ -8,10 +8,10 @@ const char SUB_FLAG_MASK		= 0x40;
 const char HALF_CARRY_FLAG_MASK = 0x20;
 const char CARRY_FLAG_MASK		= 0x10;
 
-const char ZERO_FLAG_OFFSET = 0x07;
-const char SUB_FLAG_OFFSET = 0x06;
-const char HALF_CARRY_FLAG_OFFSET = 0x05;
-const char CARRY_FLAG_OFFSET = 0x04;
+const char ZERO_FLAG_OFFSET			= 0x07;
+const char SUB_FLAG_OFFSET			= 0x06;
+const char HALF_CARRY_FLAG_OFFSET	= 0x05;
+const char CARRY_FLAG_OFFSET		= 0x04;
 
 void CentralProcessingUnit::setFlagZ()
 {
@@ -177,6 +177,7 @@ void CentralProcessingUnit::decodeExec16bit(unsigned char &OpCode)
 	unsigned char d8;
 	unsigned char d16;
 
+	// execute
 	switch (OpCode)
 	{
 	case BIT_0_H:
