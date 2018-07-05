@@ -89,6 +89,18 @@ void CentralProcessingUnit::decRegSingle(unsigned char & reg)
 	((reg & 0x0f) == 0x0f) ? setFlagH() : clearFlagH();
 }
 
+void CentralProcessingUnit::incRegDouble(unsigned short & reg)
+{
+	++reg;
+	incrementClock(4);
+}
+
+void CentralProcessingUnit::decRegDouble(unsigned short & reg)
+{
+	--reg;
+	incrementClock(4);
+}
+
 void CentralProcessingUnit::incrementClock(char incrementValue)
 {
 	CurrentClock += incrementValue;
@@ -169,6 +181,10 @@ void CentralProcessingUnit::decodeExec8bit(unsigned char &OpCode)
 		setByte(BC, A);
 		break;
 
+	case INC_BC:
+		incRegDouble(BC);
+		break;
+
 	case INC_B:
 		incRegSingle(B);
 		break;
@@ -183,6 +199,10 @@ void CentralProcessingUnit::decodeExec8bit(unsigned char &OpCode)
 
 	case LD_A_IND_BC:
 		A = getByte(BC);
+		break;
+
+	case DEC_BC:
+		decRegDouble(BC);
 		break;
 
 	case INC_C:
@@ -205,6 +225,10 @@ void CentralProcessingUnit::decodeExec8bit(unsigned char &OpCode)
 		setByte(DE, A);
 		break;
 
+	case INC_DE:
+		incRegDouble(DE);
+		break;
+
 	case INC_D:
 		incRegSingle(D);
 		break;
@@ -219,6 +243,10 @@ void CentralProcessingUnit::decodeExec8bit(unsigned char &OpCode)
 
 	case LD_A_IND_DE:
 		A = getByte(DE);
+		break;
+
+	case DEC_DE:
+		decRegDouble(DE);
 		break;
 
 	case INC_E:
@@ -251,6 +279,10 @@ void CentralProcessingUnit::decodeExec8bit(unsigned char &OpCode)
 		++HL;
 		break;
 
+	case INC_HL:
+		incRegDouble(HL);
+		break;
+
 	case INC_H:
 		incRegSingle(H);
 		break;
@@ -266,6 +298,10 @@ void CentralProcessingUnit::decodeExec8bit(unsigned char &OpCode)
 	case LD_A_IND_HL_INC:
 		A = getByte(HL);
 		++HL;
+		break;
+
+	case DEC_HL:
+		decRegDouble(HL);
 		break;
 
 	case INC_L:
@@ -287,6 +323,10 @@ void CentralProcessingUnit::decodeExec8bit(unsigned char &OpCode)
 	case LD_IND_HL_DEC_A:
 		setByte(HL,A);
 		--HL;
+		break;
+
+	case INC_SP:
+		incRegDouble(SP);
 		break;
 
 	case INC_IND_HL:
@@ -315,6 +355,10 @@ void CentralProcessingUnit::decodeExec8bit(unsigned char &OpCode)
 	case LD_A_IND_HL_DEC:
 		A = getByte(HL);
 		--HL;
+		break;
+
+	case DEC_SP:
+		decRegDouble(SP);
 		break;
 
 	case INC_A:

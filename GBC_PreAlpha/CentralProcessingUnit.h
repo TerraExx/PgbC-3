@@ -81,6 +81,9 @@ public:
 	void incRegSingle(unsigned char &reg);
 	void decRegSingle(unsigned char &reg);
 
+	void incRegDouble(unsigned short &reg);
+	void decRegDouble(unsigned short &reg);
+
 	void testBit(unsigned char &reg, const unsigned char bit);
 
 	//////////////Execution////////////////////////////////
