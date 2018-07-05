@@ -8,7 +8,7 @@ private:
 public:
 	void write(short address, unsigned char value);
 
-	unsigned char read(short address);
+	unsigned char read(unsigned short address);
 
 	MemoryManagementUnit();
 	~MemoryManagementUnit();

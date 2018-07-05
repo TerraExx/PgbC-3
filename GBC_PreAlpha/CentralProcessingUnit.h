@@ -78,6 +78,9 @@ public:
 	char getFlagH();
 	char getFlagCY();
 
+	void incRegSingle(unsigned char &reg);
+	void decRegSingle(unsigned char &reg);
+
 	void testBit(unsigned char &reg, const unsigned char bit);
 
 	//////////////Execution////////////////////////////////
@@ -88,6 +91,8 @@ public:
 
 	void setByte(unsigned short address, unsigned char value);
 	void setShort(unsigned short address, unsigned char value);
+
+	unsigned char getByte(unsigned short address);
 
 	void step();
 

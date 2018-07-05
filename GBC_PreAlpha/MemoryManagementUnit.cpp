@@ -25,7 +25,7 @@ void MemoryManagementUnit::write(short address, unsigned char value)
 	BP[address] = value;
 }
 
-unsigned char MemoryManagementUnit::read(short address)
+unsigned char MemoryManagementUnit::read(unsigned short address)
 {
 	if (address <= 0xFF)
 	{
