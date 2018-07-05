@@ -86,6 +86,22 @@ public:
 
 	void testBit(unsigned char &reg, const unsigned char bit);
 
+	//////////////Arithmetic 8-bit/////////////////////////
+	void addA(unsigned char value);
+	void adcA(unsigned char value);
+
+	void subA(unsigned char value);
+	void sbcA(unsigned char value);
+
+	//////////////Logic 8-bit/////////////////////////
+	void andA(unsigned char value);
+	void xorA(unsigned char value);
+	void orA(unsigned char value);
+	void cpA(unsigned char value);
+
+	//////////////Arithmetic 16-bit/////////////////////////
+	void addHL(unsigned short value);
+
 	//////////////Execution////////////////////////////////
 	void incrementClock(char incrementValue);
 

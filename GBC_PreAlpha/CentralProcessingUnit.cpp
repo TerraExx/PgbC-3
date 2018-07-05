@@ -148,6 +148,99 @@ void CentralProcessingUnit::testBit(unsigned char &reg, const unsigned char bit)
 	setFlagH();
 }
 
+void CentralProcessingUnit::addA(unsigned char value)
+{
+	unsigned short sum = A + value;
+	((sum & 0xff) == 0) ? setFlagZ() : clearFlagZ();
+	clearFlagN();
+	(sum & 0x0f) < (value & 0x0f) ? setFlagH() : clearFlagH();
+	(sum > 0xff) ? setFlagCY() : clearFlagCY();
+
+	A = static_cast<unsigned char>(sum & 0xff);
+}
+
+void CentralProcessingUnit::adcA(unsigned char value)
+{
+	unsigned short sum = A + value + getFlagCY();
+	((sum & 0xff) == 0) ? setFlagZ() : clearFlagZ();
+	clearFlagN();
+	(sum & 0x0f) < (value & 0x0f) ? setFlagH() : clearFlagH();
+	(sum > 0xff) ? setFlagCY() : clearFlagCY();
+
+	A = static_cast<unsigned char>(sum & 0xff);
+}
+
+void CentralProcessingUnit::subA(unsigned char value)
+{
+	(A & 0x0f) < (value & 0x0f) ? setFlagH() : clearFlagH();
+	(A & 0xf0) < ((value & 0xf0) + getFlagH()) ? setFlagCY() : clearFlagCY();
+	setFlagN();
+
+	A -= value;
+	(A == 0) ? setFlagZ() : clearFlagZ();
+}
+
+void CentralProcessingUnit::sbcA(unsigned char value)
+{
+	(A & 0x0f) < ((value & 0x0f) + getFlagCY()) ? setFlagH() : clearFlagH();
+	(A & 0xf0) < ((value & 0xf0) + getFlagH()) ? setFlagCY() : clearFlagCY();
+	setFlagN();
+
+	A -= value + getFlagCY();
+	(A == 0) ? setFlagZ() : clearFlagZ();
+}
+
+void CentralProcessingUnit::andA(unsigned char value)
+{
+	A &= value;
+	(A == 0) ? setFlagZ() : clearFlagZ();
+	clearFlagN();
+	setFlagH();
+	clearFlagCY();
+}
+
+void CentralProcessingUnit::xorA(unsigned char value)
+{
+	A ^= value;
+	(A == 0) ? setFlagZ() : clearFlagZ();
+	clearFlagN();
+	clearFlagH();
+	clearFlagCY();
+}
+
+void CentralProcessingUnit::orA(unsigned char value)
+{
+	A |= value;
+	(A == 0) ? setFlagZ() : clearFlagZ();
+	clearFlagN();
+	clearFlagH();
+	clearFlagCY();
+}
+
+void CentralProcessingUnit::cpA(unsigned char value)
+{
+	(A & 0x0f) < (value & 0x0f) ? setFlagH() : clearFlagH();
+	(A & 0xf0) < ((value & 0xf0) + getFlagH()) ? setFlagCY() : clearFlagCY();
+	setFlagN();
+
+	((A - value) == 0) ? setFlagZ() : clearFlagZ();
+}
+
+void CentralProcessingUnit::addHL(unsigned short value)
+{
+	unsigned short sumLower = L + static_cast<unsigned char>(value);
+	unsigned char lowerCarry = (sumLower > 0xff) ? 1 : 0;
+
+	unsigned short sumHigher = H + static_cast<unsigned char>(value >> 0x8) + lowerCarry;
+	clearFlagN();
+	(sumHigher & 0x0f) < ((static_cast<unsigned char>(value >> 0x8) & 0x0f) + lowerCarry) ? setFlagH() : clearFlagH();
+	(sumHigher > 0xff) ? setFlagCY() : clearFlagCY();
+
+	HL += value;
+
+	incrementClock(4);
+}
+
 void CentralProcessingUnit::step()
 {
 	// fetch
@@ -197,6 +290,10 @@ void CentralProcessingUnit::decodeExec8bit(unsigned char &OpCode)
 		B = fetchByte();
 		break;
 
+	case ADD_HL_BC:
+		addHL(BC);
+		break;
+
 	case LD_A_IND_BC:
 		A = getByte(BC);
 		break;
@@ -239,6 +336,10 @@ void CentralProcessingUnit::decodeExec8bit(unsigned char &OpCode)
 
 	case LD_D_d8:
 		D = fetchByte();
+		break;
+
+	case ADD_HL_DE:
+		addHL(DE);
 		break;
 
 	case LD_A_IND_DE:
@@ -293,6 +394,10 @@ void CentralProcessingUnit::decodeExec8bit(unsigned char &OpCode)
 
 	case LD_H_d8:
 		H = fetchByte();
+		break;
+
+	case ADD_HL_HL:
+		addHL(HL);
 		break;
 
 	case LD_A_IND_HL_INC:
@@ -350,6 +455,10 @@ void CentralProcessingUnit::decodeExec8bit(unsigned char &OpCode)
 	case LD_IND_HL_d8:
 		d8 = fetchByte();
 		setByte(HL, d8);
+		break;
+
+	case ADD_HL_SP:
+		addHL(SP);
 		break;
 
 	case LD_A_IND_HL_DEC:
@@ -620,16 +729,292 @@ void CentralProcessingUnit::decodeExec8bit(unsigned char &OpCode)
 		A = A;
 		break;
 
+	case ADD_A_B:
+		addA(B);
+		break; 
+		
+	case ADD_A_C:
+		addA(C);
+		break; 
+
+	case ADD_A_D:
+		addA(D);
+		break; 
+		
+	case ADD_A_E:
+		addA(E);
+		break;
+		
+	case ADD_A_H:
+		addA(H);
+		break; 
+		
+	case ADD_A_L:
+		addA(L);
+		break; 
+		
+	case ADD_A_IND_HL:
+		d8 = getByte(HL);
+		addA(d8);
+		break; 
+
+	case ADD_A_A:
+		addA(A);
+		break;
+
+	case ADC_A_B:
+		adcA(B);
+		break; 
+		
+	case ADC_A_C:
+		adcA(C); 
+		break;
+		
+	case ADC_A_D:
+		adcA(D);
+		break; 
+		
+	case ADC_A_E:
+		adcA(E);
+		break; 
+		
+	case ADC_A_H:
+		adcA(H);
+		break;
+
+	case ADC_A_L:
+		adcA(L);
+		break; 
+		
+	case ADC_A_IND_HL:
+		d8 = getByte(HL);
+		adcA(d8);
+		break; 
+		
+	case ADC_A_A:
+		adcA(A);
+		break;
+
+	case SUB_B:
+		subA(B);
+		break; 
+
+	case SUB_C:
+		subA(C);
+		break;
+
+	case SUB_D:
+		subA(D);
+		break;
+
+	case SUB_E:
+		subA(E);
+		break;
+
+	case SUB_H:
+		subA(H);
+		break;
+
+	case SUB_L:
+		subA(L);
+		break;
+
+	case SUB_IND_HL:
+		d8 = getByte(HL);
+		subA(d8);
+		break;
+
+	case SUB_A:
+		subA(A);
+		break;
+
+	case SBC_A_B:
+		sbcA(B);
+		break;
+
+	case SBC_A_C:
+		sbcA(C);
+		break;
+
+	case SBC_A_D:
+		sbcA(D);
+		break;
+
+	case SBC_A_E:
+		sbcA(E);
+		break;
+
+	case SBC_A_H:
+		sbcA(H);
+		break;
+
+	case SBC_A_L:
+		sbcA(L);
+		break;
+
+	case SBC_A_IND_HL:
+		d8 = getByte(HL);
+		sbcA(d8);
+		break;
+
+	case SBC_A_A:
+		sbcA(A);
+		break;
+
 	case LD_IND_HL_A:
 		setByte(HL, A);
 		break;
 
+	case AND_B:
+		andA(B);
+		break;
+
+	case AND_C:
+		andA(C);
+		break;
+
+	case AND_D:
+		andA(D);
+		break;
+
+	case AND_E:
+		andA(E);
+		break;
+
+	case AND_H:
+		andA(H);
+		break;
+
+	case AND_L:
+		andA(L);
+		break;
+
+	case AND_IND_HL:
+		d8 = getByte(HL);
+		andA(d8);
+		break;
+
+	case AND_A:
+		andA(A);
+		break;
+
+	case XOR_B:
+		xorA(B);
+		break;
+
+	case XOR_C:
+		xorA(C);
+		break;
+
+	case XOR_D:
+		xorA(D);
+		break;
+
+	case XOR_E:
+		xorA(E);
+		break;
+
+	case XOR_H:
+		xorA(H);
+		break;
+
+	case XOR_L:
+		xorA(L);
+		break;
+
+	case XOR_IND_HL:
+		d8 = getByte(HL);
+		xorA(d8);
+		break;
+
 	case XOR_A:
-		A ^= A;
-		(A == 0) ? setFlagZ() : clearFlagZ();
-		clearFlagN();
-		clearFlagH();
-		clearFlagCY();
+		xorA(A);
+		break;
+
+	case OR_B:
+		orA(B);
+		break;
+
+	case OR_C:
+		orA(C);
+		break;
+
+	case OR_D:
+		orA(D);
+		break;
+
+	case OR_E:
+		orA(E);
+		break;
+
+	case OR_H:
+		orA(H);
+		break;
+
+	case OR_L:
+		orA(L);
+		break;
+
+	case OR_IND_HL:
+		d8 = getByte(HL);
+		orA(d8);
+		break;
+
+	case OR_A:
+		orA(A);
+		break;
+
+	case CP_B:
+		cpA(B);
+		break;
+
+	case CP_C:
+		cpA(C);
+		break;
+
+	case CP_D:
+		cpA(D);
+		break;
+
+	case CP_E:
+		cpA(E);
+		break;
+
+	case CP_H:
+		cpA(H);
+		break;
+
+	case CP_L:
+		cpA(L);
+		break;
+
+	case CP_IND_HL:
+		d8 = getByte(HL);
+		cpA(d8);
+		break;
+
+	case CP_A:
+		cpA(A);
+		break;
+
+	case ADD_A_d8:
+		d8 = fetchByte();
+		addA(d8);
+		break;
+
+	case ADC_A_d8:
+		d8 = fetchByte();
+		adcA(d8);
+		break;
+
+	case SUB_d8:
+		d8 = fetchByte();
+		subA(d8);
+		break;
+
+	case SBC_A_d8:
+		d8 = fetchByte();
+		sbcA(d8);
 		break;
 
 	case LDH_IND_a8_A:
@@ -640,6 +1025,25 @@ void CentralProcessingUnit::decodeExec8bit(unsigned char &OpCode)
 	case LD_IND_C_A:
 		setByte(0xff00 + C, A);
 		break;
+
+	case AND_d8:
+		d8 = fetchByte();
+		andA(d8);
+		break;
+
+	case XOR_d8:
+		d8 = fetchByte();
+		xorA(d8);
+		break;
+
+	case OR_d8:
+		d8 = fetchByte();
+		orA(d8);
+		break;
+
+	case CP_d8:
+		d8 = fetchByte();
+		cpA(d8);
 
 	default:
 		std::cout << "Unknown 8_bit OpCode: " << OpCode << "\n";
