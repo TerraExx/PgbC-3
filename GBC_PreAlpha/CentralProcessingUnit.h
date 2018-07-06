@@ -84,7 +84,22 @@ public:
 	void incRegDouble(unsigned short &reg);
 	void decRegDouble(unsigned short &reg);
 
-	void testBit(unsigned char &reg, const unsigned char bit);
+	void rlcReg(unsigned char &reg);
+	void rrcReg(unsigned char &reg);
+
+	void rlReg(unsigned char &reg);
+	void rrReg(unsigned char &reg);
+
+	void slaReg(unsigned char &reg);
+	void sraReg(unsigned char &reg);
+
+	void swapReg(unsigned char &reg);
+
+	void srlReg(unsigned char &reg);
+
+	void resBitReg(unsigned char &reg, const unsigned char bit);
+	void setBitReg(unsigned char &reg, const unsigned char bit);
+	void testBitReg(unsigned char &reg, const unsigned char bit);
 
 	//////////////Arithmetic 8-bit/////////////////////////
 	void addA(unsigned char value);

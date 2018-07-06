@@ -101,6 +101,93 @@ void CentralProcessingUnit::decRegDouble(unsigned short & reg)
 	incrementClock(4);
 }
 
+void CentralProcessingUnit::rlcReg(unsigned char & reg)
+{
+	(reg >> 7) ? setFlagCY() : clearFlagCY();
+	clearFlagN();
+	clearFlagH();
+
+	reg = (reg << 1) | (reg >> 7);
+
+	(reg == 0) ? setFlagZ() : clearFlagZ();
+}
+
+void CentralProcessingUnit::rrcReg(unsigned char & reg)
+{
+	(reg & 0x01) ? setFlagCY() : clearFlagCY();
+	clearFlagN();
+	clearFlagH();
+
+	reg = (reg >> 1) | (reg << 7);
+
+	(reg == 0) ? setFlagZ() : clearFlagZ();
+}
+
+void CentralProcessingUnit::rlReg(unsigned char & reg)
+{
+	unsigned char tempBit = reg & 0x80;
+
+	reg = (reg << 1) | getFlagCY();
+	(tempBit > 0) ? setFlagCY() : clearFlagCY();
+	clearFlagN();
+	clearFlagH();
+	(reg == 0) ? setFlagZ() : clearFlagZ();
+}
+
+void CentralProcessingUnit::rrReg(unsigned char & reg)
+{
+	unsigned char tempBit = reg & 0x01;
+
+	reg = (reg >> 1) | (getFlagCY() << 7);
+	(tempBit > 0) ? setFlagCY() : clearFlagCY();
+	clearFlagN();
+	clearFlagH();
+	(reg == 0) ? setFlagZ() : clearFlagZ();
+}
+
+void CentralProcessingUnit::slaReg(unsigned char & reg)
+{
+	(reg & 0x80) ? setFlagCY() : clearFlagCY();
+	clearFlagN();
+	clearFlagH();
+
+	reg = reg << 1;
+
+	(reg == 0) ? setFlagZ() : clearFlagZ();
+}
+
+void CentralProcessingUnit::sraReg(unsigned char & reg)
+{
+	(reg & 0x01) ? setFlagCY() : clearFlagCY();
+	clearFlagN();
+	clearFlagH();
+
+	reg = (reg >> 1) | reg & 0x80;
+
+	(reg == 0) ? setFlagZ() : clearFlagZ();
+}
+
+void CentralProcessingUnit::swapReg(unsigned char & reg)
+{
+	reg = (reg << 4) | (reg >> 4);
+
+	(reg == 0) ? setFlagZ() : clearFlagZ();
+	clearFlagN();
+	clearFlagH();
+	clearFlagCY();
+}
+
+void CentralProcessingUnit::srlReg(unsigned char & reg)
+{
+	(reg & 0x01) ? setFlagCY() : clearFlagCY();
+	clearFlagN();
+	clearFlagH();
+
+	reg = reg >> 1;
+
+	(reg == 0) ? setFlagZ() : clearFlagZ();
+}
+
 void CentralProcessingUnit::incrementClock(char incrementValue)
 {
 	CurrentClock += incrementValue;
@@ -141,7 +228,17 @@ unsigned char CentralProcessingUnit::getByte(unsigned short address)
 	return byte;
 }
 
-void CentralProcessingUnit::testBit(unsigned char &reg, const unsigned char bit)
+void CentralProcessingUnit::resBitReg(unsigned char & reg, const unsigned char bit)
+{
+	reg &= ~(0x1 << bit);
+}
+
+void CentralProcessingUnit::setBitReg(unsigned char & reg, const unsigned char bit)
+{
+	reg |= 0x1 << bit;
+}
+
+void CentralProcessingUnit::testBitReg(unsigned char &reg, const unsigned char bit)
 {
 	((reg & (0x1<<bit)) == 0) ? setFlagZ() : clearFlagZ();
 	clearFlagN();
@@ -1059,36 +1156,984 @@ void CentralProcessingUnit::decodeExec16bit(unsigned char &OpCode)
 	// execute
 	switch (OpCode)
 	{
+	case RLC_B:
+		rlcReg(B);
+		break;
+
+	case RLC_C:
+		rlcReg(C);
+		break;
+
+	case RLC_D:
+		rlcReg(D);
+		break;
+
+	case RLC_E:
+		rlcReg(E);
+		break;
+
+	case RLC_H:
+		rlcReg(H);
+		break;
+
+	case RLC_L:
+		rlcReg(L);
+		break;
+
+	case RLC_IND_HL:
+		break;
+
+	case RLC_A:
+		rlcReg(A);
+		break;
+
+	case RRC_B:
+		rrcReg(B);
+		break;
+
+	case RRC_C:
+		rrcReg(C);
+		break;
+
+	case RRC_D:
+		rrcReg(D);
+		break;
+
+	case RRC_E:
+		rrcReg(E);
+		break;
+
+	case RRC_H:
+		rrcReg(H);
+		break;
+
+	case RRC_L:
+		rrcReg(L);
+		break;
+
+	case RRC_IND_HL:
+		break;
+
+	case RRC_A:
+		rrcReg(A);
+		break;
+
+	case RL_B:
+		rlReg(B);
+		break;
+
+	case RL_C:
+		rlReg(C);
+		break;
+
+	case RL_D:
+		rlReg(D);
+		break;
+
+	case RL_E:
+		rlReg(E);
+		break;
+
+	case RL_H:
+		rlReg(H);
+		break;
+
+	case RL_L:
+		rlReg(L);
+		break;
+
+	case RL_IND_HL:
+		break;
+
+	case RL_A:
+		rlReg(A);
+		break;
+
+	case RR_B:
+		rrReg(B);
+		break;
+
+	case RR_C:
+		rrReg(C);
+		break;
+
+	case RR_D:
+		rrReg(D);
+		break;
+
+	case RR_E:
+		rrReg(E);
+		break;
+
+	case RR_H:
+		rrReg(H);
+		break;
+
+	case RR_L:
+		rrReg(L);
+		break;
+
+	case RR_IND_HL:
+		break;
+
+	case RR_A:
+		rrReg(A);
+		break;
+
+	case SLA_B:
+		slaReg(B);
+		break;
+
+	case SLA_C:
+		slaReg(C);
+		break;
+
+	case SLA_D:
+		slaReg(D);
+		break;
+
+	case SLA_E:
+		slaReg(E);
+		break;
+
+	case SLA_H:
+		slaReg(H);
+		break;
+
+	case SLA_L:
+		slaReg(L);
+		break;
+
+	case SLA_IND_HL:
+		break;
+
+	case SLA_A:
+		slaReg(A);
+		break;
+
+	case SRA_B:
+		sraReg(B);
+		break;
+
+	case SRA_C:
+		sraReg(C);
+		break;
+
+	case SRA_D:
+		sraReg(D);
+		break;
+
+	case SRA_E:
+		sraReg(E);
+		break;
+
+	case SRA_H:
+		sraReg(H);
+		break;
+
+	case SRA_L:
+		sraReg(L);
+		break;
+
+	case SRA_IND_HL:
+		break;
+
+	case SRA_A:
+		sraReg(A);
+		break;
+
+	case SWAP_B:
+		swapReg(B);
+		break;
+
+	case SWAP_C:
+		swapReg(C);
+		break;
+
+	case SWAP_D:
+		swapReg(D);
+		break;
+
+	case SWAP_E:
+		swapReg(E);
+		break;
+
+	case SWAP_H:
+		swapReg(H);
+		break;
+
+	case SWAP_L:
+		swapReg(L);
+		break;
+
+	case SWAP_IND_HL:
+		break;
+
+	case SWAP_A:
+		swapReg(A);
+		break;
+
+	case SRL_B:
+		srlReg(B);
+		break;
+
+	case SRL_C:
+		srlReg(C);
+		break;
+
+	case SRL_D:
+		srlReg(D);
+		break;
+
+	case SRL_E:
+		srlReg(E);
+		break;
+
+	case SRL_H:
+		srlReg(H);
+		break;
+
+	case SRL_L:
+		srlReg(L);
+		break;
+
+	case SRL_IND_HL:
+		break;
+
+	case SRL_A:
+		srlReg(A);
+		break;
+
+	case BIT_0_B:
+		testBitReg(B, 0);
+		break;
+
+	case BIT_0_C:
+		testBitReg(C, 0);
+		break;
+
+	case BIT_0_D:
+		testBitReg(D, 0);
+		break;
+
+	case BIT_0_E:
+		testBitReg(E, 0);
+		break;
+
 	case BIT_0_H:
-		testBit(H, 0);
+		testBitReg(H, 0);
+		break;
+
+	case BIT_0_L:
+		testBitReg(L, 0);
+		break;
+
+	case BIT_0_IND_HL:
+		break;
+
+	case BIT_0_A:
+		testBitReg(A, 0);
+		break;
+
+	case BIT_1_B:
+		testBitReg(B, 1);
+		break;
+
+	case BIT_1_C:
+		testBitReg(C, 1);
+		break;
+
+	case BIT_1_D:
+		testBitReg(D, 1);
+		break;
+
+	case BIT_1_E:
+		testBitReg(E, 1);
 		break;
 
 	case BIT_1_H:
-		testBit(H, 1);
+		testBitReg(H, 1);
+		break;
+
+	case BIT_1_L:
+		testBitReg(L, 1);
+		break;
+
+	case BIT_1_IND_HL:
+		break;
+
+	case BIT_1_A:
+		testBitReg(A, 1);
+		break;
+
+	case BIT_2_B:
+		testBitReg(B, 2);
+		break;
+
+	case BIT_2_C:
+		testBitReg(C, 2);
+		break;
+
+	case BIT_2_D:
+		testBitReg(D, 2);
+		break;
+
+	case BIT_2_E:
+		testBitReg(E, 2);
 		break;
 
 	case BIT_2_H:
-		testBit(H, 2);
+		testBitReg(H, 2);
+		break;
+
+	case BIT_2_L:
+		testBitReg(L, 2);
+		break;
+
+	case BIT_2_IND_HL:
+		break;
+
+	case BIT_2_A:
+		testBitReg(A, 2);
+		break;
+
+	case BIT_3_B:
+		testBitReg(B, 3);
+		break;
+
+	case BIT_3_C:
+		testBitReg(C, 3);
+		break;
+
+	case BIT_3_D:
+		testBitReg(D, 3);
+		break;
+
+	case BIT_3_E:
+		testBitReg(E, 3);
 		break;
 
 	case BIT_3_H:
-		testBit(H, 3);
+		testBitReg(H, 3);
+		break;
+
+	case BIT_3_L:
+		testBitReg(L, 3);
+		break;
+
+	case BIT_3_IND_HL:
+		break;
+
+	case BIT_3_A:
+		testBitReg(A, 3);
+		break;
+
+	case BIT_4_B:
+		testBitReg(B, 4);
+		break;
+
+	case BIT_4_C:
+		testBitReg(C, 4);
+		break;
+
+	case BIT_4_D:
+		testBitReg(D, 4);
+		break;
+
+	case BIT_4_E:
+		testBitReg(E, 4);
 		break;
 
 	case BIT_4_H:
-		testBit(H, 4);
+		testBitReg(H, 4);
+		break;
+
+	case BIT_4_L:
+		testBitReg(L, 4);
+		break;
+
+	case BIT_4_IND_HL:
+		break;
+
+	case BIT_4_A:
+		testBitReg(A, 4);
+		break;
+
+	case BIT_5_B:
+		testBitReg(B, 5);
+		break;
+
+	case BIT_5_C:
+		testBitReg(C, 5);
+		break;
+
+	case BIT_5_D:
+		testBitReg(D, 5);
+		break;
+
+	case BIT_5_E:
+		testBitReg(E, 5);
 		break;
 
 	case BIT_5_H:
-		testBit(H, 5);
+		testBitReg(H, 5);
+		break;
+
+	case BIT_5_L:
+		testBitReg(L, 5);
+		break;
+
+	case BIT_5_IND_HL:
+		break;
+
+	case BIT_5_A:
+		testBitReg(A, 5);
+		break;
+
+	case BIT_6_B:
+		testBitReg(B, 6);
+		break;
+
+	case BIT_6_C:
+		testBitReg(C, 6);
+		break;
+
+	case BIT_6_D:
+		testBitReg(D, 6);
+		break;
+
+	case BIT_6_E:
+		testBitReg(E, 6);
 		break;
 
 	case BIT_6_H:
-		testBit(H, 6);
+		testBitReg(H, 6);
+		break;
+
+	case BIT_6_L:
+		testBitReg(L, 6);
+		break;
+
+	case BIT_6_IND_HL:
+		break;
+
+	case BIT_6_A:
+		testBitReg(A, 6);
+		break;
+
+	case BIT_7_B:
+		testBitReg(B, 7);
+		break;
+
+	case BIT_7_C:
+		testBitReg(C, 7);
+		break;
+
+	case BIT_7_D:
+		testBitReg(D, 7);
+		break;
+
+	case BIT_7_E:
+		testBitReg(E, 7);
 		break;
 
 	case BIT_7_H:
-		testBit(H,7);
+		testBitReg(H, 7);
+		break;
+
+	case BIT_7_L:
+		testBitReg(L, 7);
+		break;
+
+	case BIT_7_IND_HL:
+		break;
+
+	case BIT_7_A:
+		testBitReg(A, 7);
+		break;
+
+	case RES_0_B:
+		resBitReg(B, 0);
+		break;
+
+	case RES_0_C:
+		resBitReg(C, 0);
+		break;
+
+	case RES_0_D:
+		resBitReg(D, 0);
+		break;
+
+	case RES_0_E:
+		resBitReg(E, 0);
+		break;
+
+	case RES_0_H:
+		resBitReg(H, 0);
+		break;
+
+	case RES_0_L:
+		resBitReg(L, 0);
+		break;
+
+	case RES_0_IND_HL:
+		break;
+
+	case RES_0_A:
+		resBitReg(A, 0);
+		break;
+
+	case RES_1_B:
+		resBitReg(B, 1);
+		break;
+
+	case RES_1_C:
+		resBitReg(C, 1);
+		break;
+
+	case RES_1_D:
+		resBitReg(D, 1);
+		break;
+
+	case RES_1_E:
+		resBitReg(E, 1);
+		break;
+
+	case RES_1_H:
+		resBitReg(H, 1);
+		break;
+
+	case RES_1_L:
+		resBitReg(L, 1);
+		break;
+
+	case RES_1_IND_HL:
+		break;
+
+	case RES_1_A:
+		resBitReg(A, 1);
+		break;
+
+	case RES_2_B:
+		resBitReg(B, 2);
+		break;
+
+	case RES_2_C:
+		resBitReg(C, 2);
+		break;
+
+	case RES_2_D:
+		resBitReg(D, 2);
+		break;
+
+	case RES_2_E:
+		resBitReg(E, 2);
+		break;
+
+	case RES_2_H:
+		resBitReg(H, 2);
+		break;
+
+	case RES_2_L:
+		resBitReg(L, 2);
+		break;
+
+	case RES_2_IND_HL:
+		break;
+
+	case RES_2_A:
+		resBitReg(A, 2);
+		break;
+
+	case RES_3_B:
+		resBitReg(B, 3);
+		break;
+
+	case RES_3_C:
+		resBitReg(C, 3);
+		break;
+
+	case RES_3_D:
+		resBitReg(D, 3);
+		break;
+
+	case RES_3_E:
+		resBitReg(E, 3);
+		break;
+
+	case RES_3_H:
+		resBitReg(H, 3);
+		break;
+
+	case RES_3_L:
+		resBitReg(L, 3);
+		break;
+
+	case RES_3_IND_HL:
+		break;
+
+	case RES_3_A:
+		resBitReg(A, 3);
+		break;
+
+	case RES_4_B:
+		resBitReg(B, 4);
+		break;
+
+	case RES_4_C:
+		resBitReg(C, 4);
+		break;
+
+	case RES_4_D:
+		resBitReg(D, 4);
+		break;
+
+	case RES_4_E:
+		resBitReg(E, 4);
+		break;
+
+	case RES_4_H:
+		resBitReg(H, 4);
+		break;
+
+	case RES_4_L:
+		resBitReg(L, 4);
+		break;
+
+	case RES_4_IND_HL:
+		break;
+
+	case RES_4_A:
+		resBitReg(A, 4);
+		break;
+
+	case RES_5_B:
+		resBitReg(B, 5);
+		break;
+
+	case RES_5_C:
+		resBitReg(C, 5);
+		break;
+
+	case RES_5_D:
+		resBitReg(D, 5);
+		break;
+
+	case RES_5_E:
+		resBitReg(E, 5);
+		break;
+
+	case RES_5_H:
+		resBitReg(H, 5);
+		break;
+
+	case RES_5_L:
+		resBitReg(L, 5);
+		break;
+
+	case RES_5_IND_HL:
+		break;
+
+	case RES_5_A:
+		resBitReg(A, 5);
+		break;
+
+	case RES_6_B:
+		resBitReg(B, 6);
+		break;
+
+	case RES_6_C:
+		resBitReg(C, 6);
+		break;
+
+	case RES_6_D:
+		resBitReg(D, 6);
+		break;
+
+	case RES_6_E:
+		resBitReg(E, 6);
+		break;
+
+	case RES_6_H:
+		resBitReg(H, 6);
+		break;
+
+	case RES_6_L:
+		resBitReg(L, 6);
+		break;
+
+	case RES_6_IND_HL:
+		break;
+
+	case RES_6_A:
+		resBitReg(A, 6);
+		break;
+
+	case RES_7_B:
+		resBitReg(B, 7);
+		break;
+
+	case RES_7_C:
+		resBitReg(C, 7);
+		break;
+
+	case RES_7_D:
+		resBitReg(D, 7);
+		break;
+
+	case RES_7_E:
+		resBitReg(E, 7);
+		break;
+
+	case RES_7_H:
+		resBitReg(H, 7);
+		break;
+
+	case RES_7_L:
+		resBitReg(L, 7);
+		break;
+
+	case RES_7_IND_HL:
+		break;
+
+	case RES_7_A:
+		resBitReg(A, 7);
+		break;
+
+	case SET_0_B:
+		setBitReg(B, 0);
+		break;
+
+	case SET_0_C:
+		setBitReg(C, 0);
+		break;
+
+	case SET_0_D:
+		setBitReg(D, 0);
+		break;
+
+	case SET_0_E:
+		setBitReg(E, 0);
+		break;
+
+	case SET_0_H:
+		setBitReg(H, 0);
+		break;
+
+	case SET_0_L:
+		setBitReg(L, 0);
+		break;
+
+	case SET_0_IND_HL:
+		break;
+
+	case SET_0_A:
+		setBitReg(A, 0);
+		break;
+
+	case SET_1_B:
+		setBitReg(B, 1);
+		break;
+
+	case SET_1_C:
+		setBitReg(C, 1);
+		break;
+
+	case SET_1_D:
+		setBitReg(D, 1);
+		break;
+
+	case SET_1_E:
+		setBitReg(E, 1);
+		break;
+
+	case SET_1_H:
+		setBitReg(H, 1);
+		break;
+
+	case SET_1_L:
+		setBitReg(L, 1);
+		break;
+
+	case SET_1_IND_HL:
+		break;
+
+	case SET_1_A:
+		setBitReg(A, 1);
+		break;
+
+	case SET_2_C:
+		setBitReg(C, 2);
+		break;
+
+	case SET_2_D:
+		setBitReg(D, 2);
+		break;
+
+	case SET_2_E:
+		setBitReg(E, 2);
+		break;
+
+	case SET_2_H:
+		setBitReg(H, 2);
+		break;
+
+	case SET_2_L:
+		setBitReg(L, 2);
+		break;
+
+	case SET_2_IND_HL:
+		break;
+
+	case SET_2_A:
+		setBitReg(A, 2);
+		break;
+
+	case SET_3_B:
+		setBitReg(B, 3);
+		break;
+
+	case SET_3_C:
+		setBitReg(C, 3);
+		break;
+
+	case SET_3_D:
+		setBitReg(D, 3);
+		break;
+
+	case SET_3_E:
+		setBitReg(E, 3);
+		break;
+
+	case SET_3_H:
+		setBitReg(H, 3);
+		break;
+
+	case SET_3_L:
+		setBitReg(L, 3);
+		break;
+
+	case SET_3_IND_HL:
+		break;
+
+	case SET_3_A:
+		setBitReg(A, 3);
+		break;
+
+	case SET_4_C:
+		setBitReg(C, 4);
+		break;
+
+	case SET_4_D:
+		setBitReg(D, 4);
+		break;
+
+	case SET_4_E:
+		setBitReg(E, 4);
+		break;
+
+	case SET_4_H:
+		setBitReg(H, 4);
+		break;
+
+	case SET_4_L:
+		setBitReg(L, 4);
+		break;
+
+	case SET_4_IND_HL:
+		break;
+
+	case SET_4_A:
+		setBitReg(A, 4);
+		break;
+
+	case SET_5_B:
+		setBitReg(B, 5);
+		break;
+
+	case SET_5_C:
+		setBitReg(C, 5);
+		break;
+
+	case SET_5_D:
+		setBitReg(D, 5);
+		break;
+
+	case SET_5_E:
+		setBitReg(E, 5);
+		break;
+
+	case SET_5_H:
+		setBitReg(H, 5);
+		break;
+
+	case SET_5_L:
+		setBitReg(L, 5);
+		break;
+
+	case SET_5_IND_HL:
+		break;
+
+	case SET_5_A:
+		setBitReg(A, 5);
+		break;
+
+	case SET_6_C:
+		setBitReg(C, 6);
+		break;
+
+	case SET_6_D:
+		setBitReg(D, 6);
+		break;
+
+	case SET_6_E:
+		setBitReg(E, 6);
+		break;
+
+	case SET_6_H:
+		setBitReg(H, 6);
+		break;
+
+	case SET_6_L:
+		setBitReg(L, 6);
+		break;
+
+	case SET_6_IND_HL:
+		break;
+
+	case SET_6_A:
+		setBitReg(A, 6);
+		break;
+
+	case SET_7_B:
+		setBitReg(B, 7);
+		break;
+
+	case SET_7_C:
+		setBitReg(C, 7);
+		break;
+
+	case SET_7_D:
+		setBitReg(D, 7);
+		break;
+
+	case SET_7_E:
+		setBitReg(E, 7);
+		break;
+
+	case SET_7_H:
+		setBitReg(H, 7);
+		break;
+
+	case SET_7_L:
+		setBitReg(L, 7);
+		break;
+
+	case SET_7_IND_HL:
+		break;
+
+	case SET_7_A:
+		setBitReg(A, 7);
 		break;
 
 	default:
