@@ -90,6 +90,12 @@ public:
 	void rlReg(unsigned char &reg);
 	void rrReg(unsigned char &reg);
 
+	void rlcRegA();
+	void rrcRegA();
+
+	void rlRegA();
+	void rrRegA();
+
 	void slaReg(unsigned char &reg);
 	void sraReg(unsigned char &reg);
 

@@ -123,6 +123,28 @@ void CentralProcessingUnit::rrcReg(unsigned char & reg)
 	(reg == 0) ? setFlagZ() : clearFlagZ();
 }
 
+void CentralProcessingUnit::rlRegA()
+{
+	unsigned char tempBit = A & 0x80;
+
+	A = (A << 1) | getFlagCY();
+	(tempBit > 0) ? setFlagCY() : clearFlagCY();
+	clearFlagN();
+	clearFlagH();
+	clearFlagZ();
+}
+
+void CentralProcessingUnit::rrRegA()
+{
+	unsigned char tempBit = A & 0x01;
+
+	A = (A >> 1) | (getFlagCY() << 7);
+	(tempBit > 0) ? setFlagCY() : clearFlagCY();
+	clearFlagN();
+	clearFlagH();
+	clearFlagZ();
+}
+
 void CentralProcessingUnit::rlReg(unsigned char & reg)
 {
 	unsigned char tempBit = reg & 0x80;
@@ -143,6 +165,26 @@ void CentralProcessingUnit::rrReg(unsigned char & reg)
 	clearFlagN();
 	clearFlagH();
 	(reg == 0) ? setFlagZ() : clearFlagZ();
+}
+
+void CentralProcessingUnit::rlcRegA()
+{
+	clearFlagZ();
+	clearFlagN();
+	clearFlagH();
+	(A >> 7) ? setFlagCY() : clearFlagCY();
+
+	A = (A << 1) | (A >> 7);
+}
+
+void CentralProcessingUnit::rrcRegA()
+{
+	clearFlagZ();
+	clearFlagN();
+	clearFlagH();
+	(A & 0x01) ? setFlagCY() : clearFlagCY();
+
+	A = (A >> 1) | (A << 7);
 }
 
 void CentralProcessingUnit::slaReg(unsigned char & reg)
@@ -363,6 +405,9 @@ void CentralProcessingUnit::decodeExec8bit(unsigned char &OpCode)
 	// execute
 	switch (OpCode)
 	{
+	case NOP:
+		break;
+
 	case LD_BC_d16:
 		BC = fetchShort();
 		break;
@@ -385,6 +430,10 @@ void CentralProcessingUnit::decodeExec8bit(unsigned char &OpCode)
 
 	case LD_B_d8:
 		B = fetchByte();
+		break;
+
+	case RLCA:
+		rlcReg(A);
 		break;
 
 	case ADD_HL_BC:
@@ -411,6 +460,10 @@ void CentralProcessingUnit::decodeExec8bit(unsigned char &OpCode)
 		C = fetchByte();
 		break;
 
+	case RRCA:
+		rrcReg(A);
+		break;
+
 	case LD_DE_d16:
 		DE = fetchShort(); 
 		break;
@@ -435,6 +488,16 @@ void CentralProcessingUnit::decodeExec8bit(unsigned char &OpCode)
 		D = fetchByte();
 		break;
 
+	case RLA:
+		rlReg(A);
+		break;
+
+	case JR_r8:
+		d8 = fetchByte();
+		PC += static_cast<char>(d8);
+		incrementClock(4);
+		break;
+
 	case ADD_HL_DE:
 		addHL(DE);
 		break;
@@ -457,6 +520,10 @@ void CentralProcessingUnit::decodeExec8bit(unsigned char &OpCode)
 
 	case LD_E_d8:
 		E = fetchByte();
+		break;
+
+	case RRA:
+		rrReg(A);
 		break;
 
 	case JR_NZ_r8:
@@ -493,6 +560,15 @@ void CentralProcessingUnit::decodeExec8bit(unsigned char &OpCode)
 		H = fetchByte();
 		break;
 
+	case JR_Z_r8:
+		d8 = fetchByte();
+		if (getFlagZ() == 1)
+		{
+			PC += static_cast<char>(d8);
+			incrementClock(4);
+		}
+		break;
+
 	case ADD_HL_HL:
 		addHL(HL);
 		break;
@@ -516,6 +592,21 @@ void CentralProcessingUnit::decodeExec8bit(unsigned char &OpCode)
 
 	case LD_L_d8:
 		L = fetchByte();
+		break;
+
+	case CPL:
+		A = ~A;
+		setFlagN();
+		setFlagH();
+		break;
+
+	case JR_NC_r8:
+		d8 = fetchByte();
+		if (getFlagCY() == 0)
+		{
+			PC += static_cast<char>(d8);
+			incrementClock(4);
+		}
 		break;
 
 	case LD_SP_d16:
@@ -554,6 +645,19 @@ void CentralProcessingUnit::decodeExec8bit(unsigned char &OpCode)
 		setByte(HL, d8);
 		break;
 
+	case SCF:
+		clearFlagCY();
+		break;
+
+	case JR_C_r8:
+		d8 = fetchByte();
+		if (getFlagCY() == 1)
+		{
+			PC += static_cast<char>(d8);
+			incrementClock(4);
+		}
+		break;
+
 	case ADD_HL_SP:
 		addHL(SP);
 		break;
@@ -577,6 +681,10 @@ void CentralProcessingUnit::decodeExec8bit(unsigned char &OpCode)
 
 	case LD_A_d8:
 		A = fetchByte();
+		break;
+
+	case CCF:
+		(getFlagCY()) ? clearFlagCY() : setFlagCY();
 		break;
 
 	case LD_B_B:
@@ -1128,14 +1236,38 @@ void CentralProcessingUnit::decodeExec8bit(unsigned char &OpCode)
 		andA(d8);
 		break;
 
+	case LD_IND_a16_A:
+		d16 = fetchShort();
+		setByte(d16, A);
+		break;
+
 	case XOR_d8:
 		d8 = fetchByte();
 		xorA(d8);
 		break;
 
+	case LDH_A_IND_a8:
+		d8 = fetchByte();
+		A = getByte(0xff00 + d8);
+		break;
+
+	case LD_A_IND_C:
+		A = getByte(0xff00 + C);
+		break;
+
 	case OR_d8:
 		d8 = fetchByte();
 		orA(d8);
+		break;
+
+	case LD_SP_HL:
+		SP = HL;
+		incrementClock(4);
+		break;
+
+	case LD_A_IND_a16:
+		d16 = fetchShort();
+		A = getByte(d16);
 		break;
 
 	case CP_d8:
