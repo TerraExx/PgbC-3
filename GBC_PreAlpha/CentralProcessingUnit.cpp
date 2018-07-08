@@ -258,16 +258,36 @@ void CentralProcessingUnit::setByte(unsigned short address, unsigned char value)
 	incrementClock(4);
 }
 
-void CentralProcessingUnit::setShort(unsigned short address, unsigned char value)
-{
-}
-
 unsigned char CentralProcessingUnit::getByte(unsigned short address)
 {
 	unsigned char byte = MMU.read(address);
 	incrementClock(4);
 
 	return byte;
+}
+
+void CentralProcessingUnit::push(unsigned short &reg)
+{
+	setByte(SP - 1, static_cast<unsigned char>(reg >> 0x8));
+	setByte(SP - 2, static_cast<unsigned char>(reg));
+	SP -= 2;
+
+	incrementClock(12);
+}
+
+void CentralProcessingUnit::pop(unsigned short &reg)
+{
+	reg = (getByte(SP + 1) << 0x8) | getByte(SP);
+	SP += 2;
+
+	incrementClock(12);
+}
+
+void CentralProcessingUnit::call()
+{
+	unsigned short a16 = fetchShort();
+	push(PC);
+	PC = a16;
 }
 
 void CentralProcessingUnit::resBitReg(unsigned char & reg, const unsigned char bit)
@@ -380,6 +400,52 @@ void CentralProcessingUnit::addHL(unsigned short value)
 	incrementClock(4);
 }
 
+void CentralProcessingUnit::addHL_SP(char value)
+{
+	if (value >= 0)
+	{
+		unsigned short sumLower = P + value;
+		unsigned char lowerCarry = (sumLower > 0xff) ? 1 : 0;
+
+		unsigned short sumHigher = S + lowerCarry;
+		clearFlagZ();
+		clearFlagN();
+		((lowerCarry == 1) && ((sumHigher & 0x0f) == 0)) ? setFlagH() : clearFlagH();
+		(sumHigher > 0xff) ? setFlagCY() : clearFlagCY();
+	}
+	else
+	{
+		unsigned short diffLower = P - value;
+		unsigned char lowerCarry = (diffLower > P) ? 1 : 0;
+
+		unsigned short diffHigher = S - lowerCarry;
+		clearFlagZ();
+		clearFlagN();
+		((lowerCarry == 1) && ((diffHigher & 0x0f) == 0x0f)) ? setFlagH() : clearFlagH();
+		((lowerCarry == 1) && ((diffHigher & 0xf0) == 0xf0)) ? setFlagCY() : clearFlagCY();
+	}
+
+	HL = SP + value;
+
+	incrementClock(4);
+}
+
+void CentralProcessingUnit::addSP(unsigned char value)
+{
+	unsigned short sumLower = P + value;
+	unsigned char lowerCarry = (sumLower > 0xff) ? 1 : 0;
+
+	unsigned short sumHigher = S + lowerCarry;
+	clearFlagZ();
+	clearFlagN();
+	((lowerCarry == 1) && ((sumHigher & 0x0f) == 0)) ? setFlagH() : clearFlagH();
+	(sumHigher > 0xff) ? setFlagCY() : clearFlagCY();
+
+	SP += value;
+
+	incrementClock(8);
+}
+
 void CentralProcessingUnit::step()
 {
 	// fetch
@@ -434,6 +500,12 @@ void CentralProcessingUnit::decodeExec8bit(unsigned char &OpCode)
 
 	case RLCA:
 		rlcReg(A);
+		break;
+
+	case LD_IND_a16_SP:
+		d16 = fetchShort();
+		setByte(d16, P);
+		setByte(d16 + 1, S);
 		break;
 
 	case ADD_HL_BC:
@@ -1202,9 +1274,103 @@ void CentralProcessingUnit::decodeExec8bit(unsigned char &OpCode)
 		cpA(A);
 		break;
 
+	case RET_NZ:
+		if (getFlagZ() == 0)
+		{
+			pop(PC);
+			incrementClock(4);
+		}
+		else
+		{
+			incrementClock(4);
+		}
+		break;
+
+	case POP_BC:
+		pop(BC);
+		break;
+
+	case JP_NZ_a16:
+		d16 = fetchShort();
+		if (getFlagZ() == 0)
+		{
+			PC = d16;
+			incrementClock(4);
+		}
+		break;
+
+	case JP_a16:
+		d16 = fetchShort();
+		PC = d16;
+		incrementClock(4);
+		break;
+
+	case CALL_NZ_a16:
+		if (getFlagZ() == 0)
+		{
+			call();
+		}
+		else
+		{
+			d16 = fetchShort();
+		}
+		break;
+
+	case PUSH_BC:
+		push(BC);
+		break;
+
 	case ADD_A_d8:
 		d8 = fetchByte();
 		addA(d8);
+		break;
+
+	case RST_00H:
+		push(PC);
+		PC = 0x0000;
+		break;
+
+	case RET_Z:
+		if (getFlagZ() == 1)
+		{
+			pop(PC);
+			incrementClock(4);
+		}
+		else
+		{
+			incrementClock(4);
+		}
+		break;
+
+	case RET:
+		pop(PC);
+		break;
+
+	case JP_Z_a16:
+		d16 = fetchShort();
+		if (getFlagZ() == 1)
+		{
+			PC = d16;
+			incrementClock(4);
+		}
+		break;
+
+	case PREFIX_CB:
+		break;
+
+	case CALL_Z_a16:
+		if (getFlagZ() == 1)
+		{
+			call();
+		}
+		else
+		{
+			d16 = fetchShort();
+		}
+		break;
+
+	case CALL_a16:
+		call();		
 		break;
 
 	case ADC_A_d8:
@@ -1212,9 +1378,91 @@ void CentralProcessingUnit::decodeExec8bit(unsigned char &OpCode)
 		adcA(d8);
 		break;
 
+	case RST_08H:
+		push(PC);
+		PC = 0x0008;
+		break;
+
+	case RET_NC:
+		if (getFlagZ() == 1)
+		{
+			pop(PC);
+			incrementClock(4);
+		}
+		else
+		{
+			incrementClock(4);
+		}
+		break;
+
+	case POP_DE:
+		pop(DE);
+		break;
+
+	case JP_NC_a16:
+		d16 = fetchShort();
+		if (getFlagCY() == 0)
+		{
+			PC = d16;
+			incrementClock(4);
+		}
+		break;
+
+	case CALL_NC_a16:
+		if (getFlagCY() == 0)
+		{
+			call();
+		}
+		else
+		{
+			d16 = fetchShort();
+		}
+		break;
+
+	case PUSH_DE:
+		push(DE);
+		break;
+
 	case SUB_d8:
 		d8 = fetchByte();
 		subA(d8);
+		break;
+
+	case RST_10H:
+		push(PC);
+		PC = 0x0010;
+		break;
+
+	case RET_C:
+		if (getFlagCY() == 1)
+		{
+			pop(PC);
+			incrementClock(4);
+		}
+		else
+		{
+			incrementClock(4);
+		}
+		break;
+
+	case JP_C_a16:
+		d16 = fetchShort();
+		if (getFlagCY() == 1)
+		{
+			PC = d16;
+			incrementClock(4);
+		}
+		break;
+
+	case CALL_C_a16:
+		if (getFlagCY() == 1)
+		{
+			call();
+		}
+		else
+		{
+			d16 = fetchShort();
+		}
 		break;
 
 	case SBC_A_d8:
@@ -1222,13 +1470,26 @@ void CentralProcessingUnit::decodeExec8bit(unsigned char &OpCode)
 		sbcA(d8);
 		break;
 
+	case RST_18H:
+		push(PC);
+		PC = 0x0018;
+		break;
+
 	case LDH_IND_a8_A:
 		d8 = fetchByte();
 		setByte(0xff00 + d8, A);
 		break;
 
+	case POP_HL:
+		pop(HL);
+		break;
+
 	case LD_IND_C_A:
 		setByte(0xff00 + C, A);
+		break;
+
+	case PUSH_HL:
+		push(HL);
 		break;
 
 	case AND_d8:
@@ -1236,9 +1497,27 @@ void CentralProcessingUnit::decodeExec8bit(unsigned char &OpCode)
 		andA(d8);
 		break;
 
+	case RST_20H:
+		push(PC);
+		PC = 0x0020;
+		break;
+
+	case ADD_SP_r8:
+		d8 = fetchByte();
+		addSP(d8);
+		break;
+
+	case JP_IND_HL:
+		PC = HL;
+		break;
+
 	case LD_IND_a16_A:
 		d16 = fetchShort();
 		setByte(d16, A);
+		break;
+
+	case PUSH_AF:
+		push(AF);
 		break;
 
 	case XOR_d8:
@@ -1246,18 +1525,36 @@ void CentralProcessingUnit::decodeExec8bit(unsigned char &OpCode)
 		xorA(d8);
 		break;
 
+	case RST_28H:
+		push(PC);
+		PC = 0x0028;
+		break;
+
 	case LDH_A_IND_a8:
 		d8 = fetchByte();
 		A = getByte(0xff00 + d8);
+		break;
+
+	case POP_AF:
+		pop(AF);
 		break;
 
 	case LD_A_IND_C:
 		A = getByte(0xff00 + C);
 		break;
 
+	case DI:
+		IME = false;
+		break;
+
 	case OR_d8:
 		d8 = fetchByte();
 		orA(d8);
+		break;
+
+	case LD_HL_SP_INC_r8:
+		d8 = fetchByte();
+		addHL_SP(static_cast<signed char>(d8));
 		break;
 
 	case LD_SP_HL:
@@ -1270,9 +1567,19 @@ void CentralProcessingUnit::decodeExec8bit(unsigned char &OpCode)
 		A = getByte(d16);
 		break;
 
+	case EI:
+		IME = true;
+		break;
+
 	case CP_d8:
 		d8 = fetchByte();
 		cpA(d8);
+		break;
+
+	case RST_38H:
+		push(PC);
+		PC = 0x0038;
+		break;
 
 	default:
 		std::cout << "Unknown 8_bit OpCode: " << OpCode << "\n";
@@ -2272,6 +2579,19 @@ void CentralProcessingUnit::decodeExec16bit(unsigned char &OpCode)
 		std::cout << "Unknown 16_bit OpCode: " << OpCode << "\n";
 		break;
 	}
+}
+
+void CentralProcessingUnit::printGPR()
+{
+	std::cout << "------------------------" << std::endl;
+	std::cout << "AF: 0x" << std::hex << AF << std::endl;
+	std::cout << "BC: 0x" << std::hex << BC << std::endl;
+	std::cout << "DE: 0x" << std::hex << DE << std::endl;
+	std::cout << "HL: 0x" << std::hex << HL << std::endl;
+	std::cout << std::endl;
+	std::cout << "SP: 0x" << std::hex << SP << std::endl;
+	std::cout << "PC: 0x" << std::hex << PC << std::endl;
+	
 }
 
 CentralProcessingUnit::CentralProcessingUnit(MemoryManagementUnit & MMU) 

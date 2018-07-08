@@ -20,7 +20,7 @@ unsigned char BootROM[] =
 	0xF5, 0x06, 0x19, 0x78, 0x86, 0x23, 0x05, 0x20, 0xFB, 0x86, 0x20, 0xFE, 0x3E, 0x01, 0xE0, 0x50 
 };
 
-void MemoryManagementUnit::write(short address, unsigned char value)
+void MemoryManagementUnit::write(unsigned short address, unsigned char value)
 {
 	BP[address] = value;
 }

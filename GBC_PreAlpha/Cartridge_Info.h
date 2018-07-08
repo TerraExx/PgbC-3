@@ -5,13 +5,15 @@ using e_gbc_support = enum
 {
 	CGB_Incompatible,
 	CGB_Compatible,
-	CGB_Exclusive
+	CGB_Exclusive,
+	Ivalid_GBC_Support_Code
 };
 
 using e_sgb_support = enum
 {
 	Game_Boy,
-	Uses_SGBS_Functions
+	Uses_SGBS_Functions,
+	Ivalid_SGB_Support_Code
 };
 
 using e_cartridge_t = enum
@@ -41,7 +43,8 @@ using e_cartridge_t = enum
 	Pocket_Camera,
 	Bandai_TAMA5,
 	Hudson_HuC_3,
-	Hudson_HuC_1
+	Hudson_HuC_1,
+	Invalid_Cartride_Type
 };
 
 using e_ROM_size = enum
@@ -55,15 +58,18 @@ using e_ROM_size = enum
 	S_2_MB_128_banks,
 	S_1_1_MB_72_banks,
 	S_1_2_MB_80_banks,
-	S_1_5_MB_96_banks
+	S_1_5_MB_96_banks,
+	Invalid_ROM_Size
 };
 
 using e_EROM_size = enum
 {
+	None,
 	S_2_KB_1_banks,
 	S_8_KB_1_banks,
 	S_32_KB_4_banks,
-	S_128_KB_6_banks
+	S_128_KB_6_banks,
+	Invalid_EROM_Size
 };
 
 class Cartridge_Info
@@ -73,10 +79,10 @@ private:
 	std::string    gameCode;
 	e_gbc_support  supportCodeGBC;
 	std::string    makerCode;
-	e_sgb_support  supportCodeSBC;
+	e_sgb_support  supportCodeSGB;
 	e_cartridge_t  cartridgeType;
 	e_ROM_size     ROMsize;
-	e_EROM_size    EROMsize;
+	e_EROM_size    ERAMsize;
 	char           destinationCode;
 	char           versionNo;
 
@@ -85,15 +91,16 @@ public:
 	std::string    getGameCode();
 	e_gbc_support  getSupportCodeGBC();
 	std::string    getMakerCode();
-	e_sgb_support  getSupportCodeSBC();
+	e_sgb_support  getSupportCodeSGB();
 	e_cartridge_t  getCartridgeType();
 	e_ROM_size     getROMsize();
-	e_EROM_size    getEROMsize();
+	e_EROM_size    getERAMsize();
 	char           getDestinationCode();
 	char           getVersionNo();
 
-	Cartridge_Info(char *cartridgeROMbase);
+	void initCartridgeInfo(char *cartridgeBase);
 
+	Cartridge_Info();
 	~Cartridge_Info();
 };
 

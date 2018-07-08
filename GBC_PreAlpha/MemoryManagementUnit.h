@@ -1,4 +1,5 @@
 #pragma once
+
 class MemoryManagementUnit
 {
 private:
@@ -6,7 +7,7 @@ private:
 	unsigned char	*BP = new unsigned char[0xFFFF];
 
 public:
-	void write(short address, unsigned char value);
+	void write(unsigned short address, unsigned char value);
 
 	unsigned char read(unsigned short address);
 

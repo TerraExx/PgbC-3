@@ -9,6 +9,9 @@ private:
 
 	int CurrentClock = 0;
 
+	//////////Interrupt Control//////////////////
+	bool IME = false;
+
 	//////////General Purpose Registers//////////
 	union
 	{
@@ -58,7 +61,18 @@ private:
 	unsigned char  &L = __HL.S._L;
 	unsigned short &HL = __HL._HL;
 
-	unsigned short SP = 0;
+	union
+	{
+		struct {
+			unsigned char _P;
+			unsigned char _S;
+		}S;
+		unsigned short _SPtr;
+	} __SP;
+	unsigned char  &S = __SP.S._S;
+	unsigned char  &P = __SP.S._P;
+	unsigned short &SP = __SP._SPtr;
+
 	unsigned short PC = 0;
 
 public:
@@ -122,6 +136,8 @@ public:
 
 	//////////////Arithmetic 16-bit/////////////////////////
 	void addHL(unsigned short value);
+	void addHL_SP(char value);
+	void addSP(unsigned char value);
 
 	//////////////Execution////////////////////////////////
 	void incrementClock(char incrementValue);
@@ -130,14 +146,21 @@ public:
 	unsigned short fetchShort();
 
 	void setByte(unsigned short address, unsigned char value);
-	void setShort(unsigned short address, unsigned char value);
 
 	unsigned char getByte(unsigned short address);
+
+	void push(unsigned short &reg);
+	void pop(unsigned short &reg);
+
+	void call();
 
 	void step();
 
 	void decodeExec8bit(unsigned char &OpCode);
 	void decodeExec16bit(unsigned char &OpCode);
+
+	//////////////Debug Printout/////////////////
+	void printGPR();
 
 	//////////////Constructor & Destructor/////////////////
 	CentralProcessingUnit(MemoryManagementUnit &MMU);
