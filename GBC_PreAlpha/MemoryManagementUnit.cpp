@@ -1,4 +1,5 @@
 #include "MemoryManagementUnit.h"
+#include "Memory_Info.h"
 
 unsigned char BootROM[] = 
 {
@@ -20,6 +21,52 @@ unsigned char BootROM[] =
 	0xF5, 0x06, 0x19, 0x78, 0x86, 0x23, 0x05, 0x20, 0xFB, 0x86, 0x20, 0xFE, 0x3E, 0x01, 0xE0, 0x50 
 };
 
+void MemoryManagementUnit::initMMU(char * cartridgeBase)
+{
+	unsigned int memorySize = 0;
+
+	cartInfo.initCartridgeInfo(cartridgeBase);
+
+	switch (cartInfo.ROMsize)
+	{
+	case S_32_KB_2_banks:	ROM_banks = 2;   break;
+	case S_64_KB_4_banks:	ROM_banks = 4;   break;
+	case S_128_KB_8_banks:	ROM_banks = 8;   break;
+	case S_256_KB_16_banks: ROM_banks = 16;  break;
+	case S_512_KB_32_banks: ROM_banks = 32;  break;
+	case S_1_MB_64_banks:	ROM_banks = 64;  break;
+	case S_2_MB_128_banks:	ROM_banks = 128; break;
+	case S_1_1_MB_72_banks: ROM_banks = 72;  break;
+	case S_1_2_MB_80_banks: ROM_banks = 80;  break;
+	case S_1_5_MB_96_banks: ROM_banks = 96;  break;
+	default: break;
+	}
+	memorySize += ROM_Bn_SIZE * ROM_banks;
+
+	memorySize += CRAM_SIZE * 2;
+	memorySize += BGD1_SIZE * 2;
+	memorySize += BGD2_SIZE * 2;
+
+	switch (cartInfo.ERAMsize)
+	{
+	case None:				EROM_banks = 0;	 break;
+	case S_2_KB_1_banks:	EROM_banks = 1;	 break;
+	case S_8_KB_1_banks:	EROM_banks = 1;	 break;
+	case S_32_KB_4_banks:	EROM_banks = 4;	 break;
+	case S_128_KB_16_banks:	EROM_banks = 16; break;
+	}
+	memorySize += ERAM_SIZE * EROM_banks;
+
+	memorySize += IROM_B0_SIZE * 8;
+	memorySize += ECHO_RAM_SIZE;
+	memorySize += OAM_SIZE;
+	memorySize += UUM_SIZE;
+	memorySize += IOREG_SIZE;
+	memorySize += ZP_SIZE;
+
+	BP = new unsigned char[memorySize];
+}
+
 void MemoryManagementUnit::write(unsigned short address, unsigned char value)
 {
 	BP[address] = value;
@@ -27,6 +74,28 @@ void MemoryManagementUnit::write(unsigned short address, unsigned char value)
 
 unsigned char MemoryManagementUnit::read(unsigned short address)
 {
+	unsigned char value;
+
+	if (address < ROM_Bn_OFFSET)
+	{
+		if (runningBootCode == true)
+		{
+			value = (address <= 0xff) ? BootROM[address] : BP[address];
+		}
+		else
+		{
+			value = BP[address];
+		}
+	}
+	else if (address < CRAM_OFFSET)
+	{
+		value = BP[address + (ROM_Bn_SIZE * selected_ROM_bank)];
+	}
+	else if ()
+	{
+
+	}
+
 	if (address <= 0xFF)
 	{
 		return BootROM[address];

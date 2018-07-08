@@ -7,7 +7,6 @@
 int main(int argc, char* argv[]) {
 
 	char *cartridgeBase;
-	Cartridge_Info CartInfo;
 	MemoryManagementUnit MMU;
 	CentralProcessingUnit CPU(MMU);
 
@@ -26,8 +25,7 @@ int main(int argc, char* argv[]) {
 	file.read(cartridgeBase, size);
 	file.close();
 
-	CartInfo.initCartridgeInfo(cartridgeBase);
-
+	MMU.initMMU(cartridgeBase);
 
 	while (1)
 	{

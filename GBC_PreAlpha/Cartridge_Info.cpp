@@ -88,7 +88,7 @@ void Cartridge_Info::initCartridgeInfo(char * cartridgeBase)
 	case 0x01: ERAMsize = S_2_KB_1_banks;	break;
 	case 0x02: ERAMsize = S_8_KB_1_banks;	break;
 	case 0x03: ERAMsize = S_32_KB_4_banks;	break;
-	case 0x04: ERAMsize = S_128_KB_6_banks; break;
+	case 0x04: ERAMsize = S_128_KB_16_banks; break;
 	default: break;
 	}
 

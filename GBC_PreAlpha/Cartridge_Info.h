@@ -68,13 +68,13 @@ using e_EROM_size = enum
 	S_2_KB_1_banks,
 	S_8_KB_1_banks,
 	S_32_KB_4_banks,
-	S_128_KB_6_banks,
+	S_128_KB_16_banks,
 	Invalid_EROM_Size
 };
 
 class Cartridge_Info
 {
-private:
+public:
 	std::string    gameTitle;
 	std::string    gameCode;
 	e_gbc_support  supportCodeGBC;
@@ -85,18 +85,6 @@ private:
 	e_EROM_size    ERAMsize;
 	char           destinationCode;
 	char           versionNo;
-
-public:
-	std::string    getGameTitile();
-	std::string    getGameCode();
-	e_gbc_support  getSupportCodeGBC();
-	std::string    getMakerCode();
-	e_sgb_support  getSupportCodeSGB();
-	e_cartridge_t  getCartridgeType();
-	e_ROM_size     getROMsize();
-	e_EROM_size    getERAMsize();
-	char           getDestinationCode();
-	char           getVersionNo();
 
 	void initCartridgeInfo(char *cartridgeBase);
 
