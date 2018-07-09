@@ -41,11 +41,6 @@ void MemoryManagementUnit::initMMU(char * cartridgeBase)
 	case S_1_5_MB_96_banks: ROM_banks = 96;  break;
 	default: break;
 	}
-	memorySize += ROM_Bn_SIZE * ROM_banks;
-
-	memorySize += CRAM_SIZE * 2;
-	memorySize += BGD1_SIZE * 2;
-	memorySize += BGD2_SIZE * 2;
 
 	switch (cartInfo.ERAMsize)
 	{
@@ -55,9 +50,13 @@ void MemoryManagementUnit::initMMU(char * cartridgeBase)
 	case S_32_KB_4_banks:	EROM_banks = 4;	 break;
 	case S_128_KB_16_banks:	EROM_banks = 16; break;
 	}
-	memorySize += ERAM_SIZE * EROM_banks;
 
-	memorySize += IROM_B0_SIZE * 8;
+	memorySize += ROM_Bn_SIZE * ROM_banks;
+	memorySize += CRAM_SIZE * 2;
+	memorySize += BGD1_SIZE * 2;
+	memorySize += BGD2_SIZE * 2;
+	memorySize += ERAM_SIZE * EROM_banks;
+	memorySize += IRAM_B0_SIZE * 8;
 	memorySize += ECHO_RAM_SIZE;
 	memorySize += OAM_SIZE;
 	memorySize += UUM_SIZE;
@@ -65,6 +64,32 @@ void MemoryManagementUnit::initMMU(char * cartridgeBase)
 	memorySize += ZP_SIZE;
 
 	BP = new unsigned char[memorySize];
+
+	baseROM_0 = BP;
+	for (unsigned char count = 0; count < ROM_banks; count++)
+	{
+		baseROM_n.push_back(baseROM_0 + ROM_B0_SIZE + (ROM_Bn_SIZE * count));
+	}
+	baseCRAM.push_back(baseROM_n.back() + ROM_Bn_SIZE);
+	baseCRAM.push_back(baseROM_n.back() + ROM_Bn_SIZE + CRAM_SIZE);
+	baseBGD1.push_back(baseCRAM.back() + CRAM_SIZE);
+	baseBGD1.push_back(baseCRAM.back() + CRAM_SIZE + BGD1_SIZE);
+	baseBGD2.push_back(baseBGD1.back() + BGD1_SIZE);
+	baseBGD2.push_back(baseBGD1.back() + BGD1_SIZE + BGD2_SIZE);
+	for (unsigned char count = 0; count < EROM_banks; count++)
+	{
+		baseERAM_n.push_back(baseBGD2.back() + BGD2_SIZE + (ERAM_SIZE * count));
+	}
+	baseIRAM_0 = baseERAM_n.back() + ERAM_SIZE;
+	for (unsigned char count = 0; count < 8; count++)
+	{
+		baseIRAM_n.push_back(baseIRAM_0 + IRAM_B0_SIZE + (IRAM_Bn_SIZE * count));
+	}
+	baseEchoRAM = baseIRAM_n.back() + IRAM_Bn_SIZE;
+	baseOAM = baseEchoRAM + ECHO_RAM_SIZE;
+	baseUUM = baseOAM + OAM_SIZE;
+	baseIOREG = baseUUM + UUM_SIZE;
+	baseZP = baseIOREG + IOREG_SIZE;
 }
 
 void MemoryManagementUnit::write(unsigned short address, unsigned char value)
@@ -90,10 +115,6 @@ unsigned char MemoryManagementUnit::read(unsigned short address)
 	else if (address < CRAM_OFFSET)
 	{
 		value = BP[address + (ROM_Bn_SIZE * selected_ROM_bank)];
-	}
-	else if ()
-	{
-
 	}
 
 	if (address <= 0xFF)
