@@ -94,7 +94,59 @@ void MemoryManagementUnit::initMMU(char * cartridgeBase)
 
 void MemoryManagementUnit::write(unsigned short address, unsigned char value)
 {
-	BP[address] = value;
+	if (address < ROM_Bn_OFFSET)
+	{
+		// TODO Implement MBC
+	}
+	else if (address < CRAM_OFFSET)
+	{
+		// TODO Implement MBC
+	}
+	else if (address < BGD1_OFFSET)
+	{
+		baseCRAM.at(0)[address - CRAM_OFFSET] = value;
+	}
+	else if (address < BGD2_OFFSET)
+	{
+		baseBGD1.at(0)[address - BGD1_OFFSET] = value;
+	}
+	else if (address < ERAM_OFFSET)
+	{
+		baseBGD2.at(0)[address - BGD2_OFFSET] = value;
+	}
+	else if (address < IROM_B0_OFFSET)
+	{
+		baseERAM_n.at(selected_EROM_bank)[address - ERAM_OFFSET] = value;
+	}
+	else if (address < IROM_Bn_OFFSET)
+	{
+		baseIRAM_0[address - IROM_B0_OFFSET] = value;
+	}
+	else if (address < ECHO_RAM_OFFSET)
+	{
+		baseIRAM_n.at(IROM_banks)[address - IROM_Bn_OFFSET] = value;
+	}
+	else if (address < OAM_OFFSET)
+	{
+		baseEchoRAM[address - ECHO_RAM_OFFSET] = value;
+	}
+	else if (address < UUM_OFFSET)
+	{
+		baseOAM[address - OAM_OFFSET] = value;
+	}
+	else if (address < IOREG_OFFSET)
+	{
+		std::cout << "Writing to unusable memory\n";
+		exit(1);
+	}
+	else if (address < ZP_OFFSET)
+	{
+		baseIOREG[address - IOREG_OFFSET] = value;
+	}
+	else
+	{
+		baseZP[address - ZP_OFFSET] = value;
+	}
 }
 
 unsigned char MemoryManagementUnit::read(unsigned short address)
@@ -103,28 +155,66 @@ unsigned char MemoryManagementUnit::read(unsigned short address)
 
 	if (address < ROM_Bn_OFFSET)
 	{
-		if (runningBootCode == true)
+		if ((runningBootCode == true) && (address <= 0xff))
 		{
-			value = (address <= 0xff) ? BootROM[address] : BP[address];
+			BootROM[address];
 		}
 		else
 		{
-			value = BP[address];
+			value = baseROM_0[address];
 		}
 	}
 	else if (address < CRAM_OFFSET)
 	{
-		value = BP[address + (ROM_Bn_SIZE * selected_ROM_bank)];
+		value = baseROM_n.at(ROM_banks)[address - ROM_Bn_OFFSET];
 	}
-
-	if (address <= 0xFF)
+	else if (address < BGD1_OFFSET)
 	{
-		return BootROM[address];
+		value = baseCRAM.at(0)[address - CRAM_OFFSET];
+	}
+	else if (address < BGD2_OFFSET)
+	{
+		value = baseBGD1.at(0)[address - BGD1_OFFSET];
+	}
+	else if (address < ERAM_OFFSET)
+	{
+		value = baseBGD2.at(0)[address - BGD2_OFFSET];
+	}
+	else if (address < IROM_B0_OFFSET)
+	{
+		value = baseERAM_n.at(selected_EROM_bank)[address - ERAM_OFFSET];
+	}
+	else if (address < IROM_Bn_OFFSET)
+	{
+		value = baseIRAM_0[address - IROM_B0_OFFSET];
+	}
+	else if (address < ECHO_RAM_OFFSET)
+	{
+		value = baseIRAM_n.at(IROM_banks)[address - IROM_Bn_OFFSET];
+	}
+	else if (address < OAM_OFFSET)
+	{
+		value = baseEchoRAM[address - ECHO_RAM_OFFSET];
+	}
+	else if (address < UUM_OFFSET)
+	{
+		value = baseOAM[address - OAM_OFFSET];
+	}
+	else if (address < IOREG_OFFSET)
+	{
+		std::cout << "Reading from unusable memory\n";
+		exit(1);
+	}
+	else if (address < ZP_OFFSET)
+	{
+		value = baseIOREG[address - IOREG_OFFSET];
 	}
 	else
 	{
-		return BP[address];
+		value = baseZP[address - ZP_OFFSET];
 	}
+
+	return value;
 }
 
 MemoryManagementUnit::MemoryManagementUnit()
