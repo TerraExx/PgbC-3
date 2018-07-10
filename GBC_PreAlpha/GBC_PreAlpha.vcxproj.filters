@@ -56,5 +56,8 @@
     <ClInclude Include="InstructionSet.h">
       <Filter>Header Files\CPU</Filter>
     </ClInclude>
+    <ClInclude Include="Reg_Info.h">
+      <Filter>Header Files\MMU</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

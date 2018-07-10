@@ -1,5 +1,6 @@
 #include "MemoryManagementUnit.h"
 #include "Memory_Info.h"
+#include "Reg_Info.h"
 
 unsigned char BootROM[] = 
 {
@@ -25,6 +26,7 @@ void MemoryManagementUnit::initMMU(char * cartridgeBase)
 {
 	unsigned int memorySize = 0;
 
+	////////////////////Read ROM Header//////////////////////
 	cartInfo.initCartridgeInfo(cartridgeBase);
 
 	switch (cartInfo.ROMsize)
@@ -51,6 +53,7 @@ void MemoryManagementUnit::initMMU(char * cartridgeBase)
 	case S_128_KB_16_banks:	EROM_banks = 16; break;
 	}
 
+	////////////////////Calculate Req. Memory//////////////////////
 	memorySize += ROM_Bn_SIZE * ROM_banks;
 	memorySize += CRAM_SIZE * 2;
 	memorySize += BGD1_SIZE * 2;
@@ -63,33 +66,56 @@ void MemoryManagementUnit::initMMU(char * cartridgeBase)
 	memorySize += IOREG_SIZE;
 	memorySize += ZP_SIZE;
 
-	BP = new unsigned char[memorySize];
-
-	baseROM_0 = BP;
+	////////////////////Set Base Pointers//////////////////////
+	BP          = new unsigned char[memorySize];
+	baseROM_0   = BP;
 	for (unsigned char count = 0; count < ROM_banks; count++)
 	{
 		baseROM_n.push_back(baseROM_0 + ROM_B0_SIZE + (ROM_Bn_SIZE * count));
 	}
-	baseCRAM.push_back(baseROM_n.back() + ROM_Bn_SIZE);
+	baseCRAM.push_back(baseROM_n.back() + ROM_Bn_SIZE );
 	baseCRAM.push_back(baseROM_n.back() + ROM_Bn_SIZE + CRAM_SIZE);
-	baseBGD1.push_back(baseCRAM.back() + CRAM_SIZE);
-	baseBGD1.push_back(baseCRAM.back() + CRAM_SIZE + BGD1_SIZE);
-	baseBGD2.push_back(baseBGD1.back() + BGD1_SIZE);
-	baseBGD2.push_back(baseBGD1.back() + BGD1_SIZE + BGD2_SIZE);
+	baseBGD1.push_back(baseCRAM.back()  + CRAM_SIZE   );
+	baseBGD1.push_back(baseCRAM.back()  + CRAM_SIZE   + BGD1_SIZE);
+	baseBGD2.push_back(baseBGD1.back()  + BGD1_SIZE   );
+	baseBGD2.push_back(baseBGD1.back()  + BGD1_SIZE   + BGD2_SIZE);
 	for (unsigned char count = 0; count < EROM_banks; count++)
 	{
 		baseERAM_n.push_back(baseBGD2.back() + BGD2_SIZE + (ERAM_SIZE * count));
 	}
-	baseIRAM_0 = baseERAM_n.back() + ERAM_SIZE;
+	baseIRAM_0  = baseERAM_n.back() + ERAM_SIZE;
 	for (unsigned char count = 0; count < 8; count++)
 	{
 		baseIRAM_n.push_back(baseIRAM_0 + IRAM_B0_SIZE + (IRAM_Bn_SIZE * count));
 	}
 	baseEchoRAM = baseIRAM_n.back() + IRAM_Bn_SIZE;
-	baseOAM = baseEchoRAM + ECHO_RAM_SIZE;
-	baseUUM = baseOAM + OAM_SIZE;
-	baseIOREG = baseUUM + UUM_SIZE;
-	baseZP = baseIOREG + IOREG_SIZE;
+	baseOAM     = baseEchoRAM		+ ECHO_RAM_SIZE;
+	baseUUM     = baseOAM			+ OAM_SIZE;
+	baseIOREG   = baseUUM			+ UUM_SIZE;
+	baseZP      = baseIOREG			+ IOREG_SIZE;
+
+	////////////////////Set Register Pointers//////////////////////
+	P1_ptr   = baseIOREG + P1;
+	SB_ptr   = baseIOREG + SB;
+	SC_ptr   = baseIOREG + SC;
+	DIV_ptr  = baseIOREG + DIV;
+	TIMA_ptr = baseIOREG + TIMA;
+	TMA_ptr  = baseIOREG + TMA;
+	TAC_ptr  = baseIOREG + TAC;
+	IF_ptr   = baseIOREG + IF;
+	IE_ptr   = baseIOREG + IE;
+	LCDC_ptr = baseIOREG + LCDC;
+	STAT_ptr = baseIOREG + STAT;
+	SCY_ptr  = baseIOREG + SCY;
+	SCX_ptr  = baseIOREG + SCX;
+	LY_ptr   = baseIOREG + LY;
+	LYC_ptr  = baseIOREG + LYC;
+	BCPS_ptr = baseIOREG + BCPS;
+	BCPD_ptr = baseIOREG + BCPD;
+	OCPS_ptr = baseIOREG + OCPS;
+	OCPD_ptr = baseIOREG + OCPD;
+	WY_ptr   = baseIOREG + WY;
+	WX_ptr   = baseIOREG + WX;
 }
 
 void MemoryManagementUnit::write(unsigned short address, unsigned char value)
