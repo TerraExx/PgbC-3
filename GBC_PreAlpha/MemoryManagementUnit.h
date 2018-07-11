@@ -1,6 +1,9 @@
 #pragma once
 #include <iostream>
 #include <vector>
+#include <utility>
+#include <unordered_map>
+#include <functional>
 
 #include "Cartridge_Info.h"
 
@@ -52,18 +55,29 @@ private:
 	unsigned char* SCX_ptr  = nullptr;
 	unsigned char* LY_ptr   = nullptr;
 	unsigned char* LYC_ptr  = nullptr;
+	unsigned char* DMA_ptr  = nullptr;
+	unsigned char* BGP_ptr  = nullptr;
+	unsigned char* OBP0_ptr = nullptr;
+	unsigned char* OBP1_ptr = nullptr;
 	unsigned char* BCPS_ptr = nullptr;
 	unsigned char* BCPD_ptr = nullptr;
 	unsigned char* OCPS_ptr = nullptr;
 	unsigned char* OCPD_ptr = nullptr;
 	unsigned char* WY_ptr   = nullptr;
 	unsigned char* WX_ptr   = nullptr;
+	unsigned char* KEY1_ptr = nullptr;
+	unsigned char* VBK_ptr  = nullptr;
+	unsigned char* SVBK_ptr = nullptr;
+
+	std::unordered_map<unsigned short, unsigned char> offsetHash;
 
 public:
 	void initMMU(char * cartridgeBase);
 
 	void write(unsigned short address, unsigned char value);
 	unsigned char read(unsigned short address);
+
+	unsigned char getReg(const unsigned char reg, const unsigned char bit = 0xFF);
 
 	MemoryManagementUnit();
 	~MemoryManagementUnit();

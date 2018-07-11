@@ -94,7 +94,7 @@ void MemoryManagementUnit::initMMU(char * cartridgeBase)
 	baseIOREG   = baseUUM			+ UUM_SIZE;
 	baseZP      = baseIOREG			+ IOREG_SIZE;
 
-	////////////////////Set Register Pointers//////////////////////
+	////////////////////Init Registers//////////////////////
 	P1_ptr   = baseIOREG + P1;
 	SB_ptr   = baseIOREG + SB;
 	SC_ptr   = baseIOREG + SC;
@@ -110,12 +110,106 @@ void MemoryManagementUnit::initMMU(char * cartridgeBase)
 	SCX_ptr  = baseIOREG + SCX;
 	LY_ptr   = baseIOREG + LY;
 	LYC_ptr  = baseIOREG + LYC;
+	DMA_ptr  = baseIOREG + DMA;
+	BGP_ptr  = baseIOREG + BGP;
+	OBP0_ptr = baseIOREG + OBP0;
+	OBP1_ptr = baseIOREG + OBP1;
 	BCPS_ptr = baseIOREG + BCPS;
 	BCPD_ptr = baseIOREG + BCPD;
 	OCPS_ptr = baseIOREG + OCPS;
 	OCPD_ptr = baseIOREG + OCPD;
 	WY_ptr   = baseIOREG + WY;
 	WX_ptr   = baseIOREG + WX;
+	KEY1_ptr = baseIOREG + KEY1;
+	VBK_ptr  = baseIOREG + VBK;
+	SVBK_ptr = baseIOREG + SVBK;
+
+	auto getOffset = [](unsigned char mask) -> unsigned char
+	{
+		unsigned char ret = 0;
+
+		while (!(mask & 0x01))
+		{
+			mask = mask >> 1;
+			++ret;
+		}
+
+		return ret;
+	};
+
+	auto getHash = [](const unsigned char& reg, const unsigned char& mask) -> unsigned short
+	{
+		return (reg << 8) | mask;
+	};
+
+	offsetHash.insert({ getHash(P1, P1_P10_IN) , getOffset(P1_P10_IN) });
+	offsetHash.insert({ getHash(P1, P1_P11_IN) , getOffset(P1_P11_IN) });
+	offsetHash.insert({ getHash(P1, P1_P12_IN) , getOffset(P1_P12_IN) });
+	offsetHash.insert({ getHash(P1, P1_P13_IN) , getOffset(P1_P13_IN) });
+	offsetHash.insert({ getHash(P1, P1_P14_OUT) , getOffset(P1_P14_OUT) });
+	offsetHash.insert({ getHash(P1, P1_P15_OUT) , getOffset(P1_P15_OUT) });
+
+	offsetHash.insert({ getHash(SC, SC_TRANSFER_START) , getOffset(SC_TRANSFER_START) });
+	offsetHash.insert({ getHash(SC, SC_CLOCK_SPEED) , getOffset(SC_CLOCK_SPEED) });
+	offsetHash.insert({ getHash(SC, SC_SHIFT_CLOCK) , getOffset(SC_SHIFT_CLOCK) });
+
+	offsetHash.insert({ getHash(TAC, TAC_INPUT_CLOCK) , getOffset(TAC_INPUT_CLOCK) });
+	offsetHash.insert({ getHash(TAC, TAC_TIMER_START) , getOffset(TAC_TIMER_START) });
+
+	offsetHash.insert({ getHash(IF, IF_VB) , getOffset(IF_VB) });
+	offsetHash.insert({ getHash(IF, IF_LCDC) , getOffset(IF_LCDC) });
+	offsetHash.insert({ getHash(IF, IF_TO) , getOffset(IF_TO) });
+	offsetHash.insert({ getHash(IF, IF_SIO) , getOffset(IF_SIO) });
+	offsetHash.insert({ getHash(IF, IF_P1) , getOffset(IF_P1) });
+
+	offsetHash.insert({ getHash(IE, IE_VB) , getOffset(IE_VB) });
+	offsetHash.insert({ getHash(IE, IE_LCDC) , getOffset(IE_LCDC) });
+	offsetHash.insert({ getHash(IE, IE_TO) , getOffset(IE_TO) });
+	offsetHash.insert({ getHash(IE, IE_SIO) , getOffset(IE_SIO) });
+	offsetHash.insert({ getHash(IE, IE_P1) , getOffset(IE_P1) });
+
+	offsetHash.insert({ getHash(LCDC, LCDC_BG_DISPLAY_STATE) , getOffset(LCDC_BG_DISPLAY_STATE) });
+	offsetHash.insert({ getHash(LCDC, LCDC_OBJ_ON) , getOffset(LCDC_OBJ_ON) });
+	offsetHash.insert({ getHash(LCDC, LCDC_OBJ_BLOCK_COMPOSITION) , getOffset(LCDC_OBJ_BLOCK_COMPOSITION) });
+	offsetHash.insert({ getHash(LCDC, LCDC_BG_CODE_AREA) , getOffset(LCDC_BG_CODE_AREA) });
+	offsetHash.insert({ getHash(LCDC, LCDC_BG_CHARACTER_DATA) , getOffset(LCDC_BG_CHARACTER_DATA) });
+	offsetHash.insert({ getHash(LCDC, LCDC_WINDOW_ON) , getOffset(LCDC_WINDOW_ON) });
+	offsetHash.insert({ getHash(LCDC, LCDC_WINDOW_CODE_AREA) , getOffset(LCDC_WINDOW_CODE_AREA) });
+	offsetHash.insert({ getHash(LCDC, LCDC_OPERATION_STOP) , getOffset(LCDC_OPERATION_STOP) });
+	
+	offsetHash.insert({ getHash(STAT, STAT_MODE_FLAG) , getOffset(STAT_MODE_FLAG) });
+	offsetHash.insert({ getHash(STAT, STAT_MATCH_FLAG) , getOffset(STAT_MATCH_FLAG) });
+	offsetHash.insert({ getHash(STAT, STAT_IR_MODE_00) , getOffset(STAT_IR_MODE_00) });
+	offsetHash.insert({ getHash(STAT, STAT_IR_MODE_01) , getOffset(STAT_IR_MODE_01) });
+	offsetHash.insert({ getHash(STAT, STAT_IR_MODE_10) , getOffset(STAT_IR_MODE_10) });
+	offsetHash.insert({ getHash(STAT, STAT_LYC) , getOffset(STAT_LYC) });
+	
+	offsetHash.insert({ getHash(BGP, BGP_00) , getOffset(BGP_00) });
+	offsetHash.insert({ getHash(BGP, BGP_01) , getOffset(BGP_01) });
+	offsetHash.insert({ getHash(BGP, BGP_10) , getOffset(BGP_10) });
+	offsetHash.insert({ getHash(BGP, BGP_11) , getOffset(BGP_11) });
+	
+	offsetHash.insert({ getHash(OBP0, OBP0_00) , getOffset(OBP0_00) });
+	offsetHash.insert({ getHash(OBP0, OBP0_01) , getOffset(OBP0_01) });
+	offsetHash.insert({ getHash(OBP0, OBP0_10) , getOffset(OBP0_10) });
+	offsetHash.insert({ getHash(OBP0, OBP0_11) , getOffset(OBP0_11) });
+	
+	offsetHash.insert({ getHash(BCPS, BCPS_HL) , getOffset(BCPS_HL) });
+	offsetHash.insert({ getHash(BCPS, BCPS_PALLET_DATA_NUM) , getOffset(BCPS_PALLET_DATA_NUM) });
+	offsetHash.insert({ getHash(BCPS, BCPS_PALLET_NUM) , getOffset(BCPS_PALLET_NUM) });
+	offsetHash.insert({ getHash(BCPS, BCPS_FLAG) , getOffset(BCPS_FLAG) });
+	
+	offsetHash.insert({ getHash(OCPS, OCPS_HL) , getOffset(OCPS_HL) });
+	offsetHash.insert({ getHash(OCPS, OCPS_PALLET_DATA_NUM) , getOffset(OCPS_PALLET_DATA_NUM) });
+	offsetHash.insert({ getHash(OCPS, OCPS_PALLET_NUM) , getOffset(OCPS_PALLET_NUM) });
+	offsetHash.insert({ getHash(OCPS, OCPS_FLAG) , getOffset(OCPS_FLAG) });
+	
+	offsetHash.insert({ getHash(KEY1, KEY1_ESS) , getOffset(KEY1_ESS) });
+	offsetHash.insert({ getHash(KEY1, KEY1_CS) , getOffset(KEY1_CS) });
+	
+	offsetHash.insert({ getHash(VBK, VBK_BANK) , getOffset(VBK_BANK) });
+	
+	offsetHash.insert({ getHash(SVBK, SVBK_BANK) , getOffset(SVBK_BANK) });
 }
 
 void MemoryManagementUnit::write(unsigned short address, unsigned char value)

@@ -34,9 +34,9 @@ const unsigned char SB = 0x01;
 */
 const unsigned char SC = 0x02;
 
-const unsigned char SB_TRANSFER_START = 0x1;
-const unsigned char SB_CLOCK_SPEED    = 0x2;
-const unsigned char SB_SHIFT_CLOCK    = 0x8;
+const unsigned char SC_TRANSFER_START = 0x1;
+const unsigned char SC_CLOCK_SPEED    = 0x2;
+const unsigned char SC_SHIFT_CLOCK    = 0x8;
 
 /*
 	\name		DIV
@@ -165,7 +165,7 @@ const unsigned char SCX = 0x43;
 	\info		LCDC y-cordinate
 
 	\address	0xFF44
-	\type		R/W
+	\type		R
 */
 const unsigned char LY = 0x44;
 
@@ -177,6 +177,57 @@ const unsigned char LY = 0x44;
 	\type		R/W
 */
 const unsigned char LYC = 0x45;
+
+/*
+	\name		DMA
+	\info		DMA transfer starts as soon as the address is set
+
+	\address	0xFF46
+	\type		W
+*/
+const unsigned char DMA = 0x46;
+
+/*
+	\name		BGP
+	\info		Background pallet data
+
+	\address	0xFF47
+	\type		W
+*/
+const unsigned char BGP = 0x47;
+
+const unsigned char BGP_00 = 0x03;
+const unsigned char BGP_01 = 0x0C;
+const unsigned char BGP_10 = 0x30;
+const unsigned char BGP_11 = 0xC0;
+
+/*
+	\name		OBP0
+	\info		Object pallet data 0
+
+	\address	0xFF48
+	\type		W
+*/
+const unsigned char OBP0 = 0x48;
+
+const unsigned char OBP0_00 = 0x03;
+const unsigned char OBP0_01 = 0x0C;
+const unsigned char OBP0_10 = 0x30;
+const unsigned char OBP0_11 = 0xC0;
+
+/*
+\name		OBP1
+\info		Object pallet data 1
+
+\address	0xFF49
+\type		W
+*/
+const unsigned char OBP1 = 0x49;
+
+const unsigned char OBP1_00 = 0x03;
+const unsigned char OBP1_01 = 0x0C;
+const unsigned char OBP1_10 = 0x30;
+const unsigned char OBP1_11 = 0xC0;
 
 /*
 	\name		BCPS
@@ -216,7 +267,7 @@ const unsigned char OCPS_PALLET_NUM      = 0x38;
 const unsigned char OCPS_FLAG            = 0x80;
 
 /*
-\name		OCPD
+	\name		OCPD
 	\info		Specifies a OBJ write data
 
 	\address	0xFF6B
@@ -241,3 +292,37 @@ const unsigned char WY = 0x4A;
 	\type		R/W
 */
 const unsigned char WX = 0x4B;
+
+/*
+	\name		KEY1
+	\info		Speed switching register
+
+	\address	0xFF4D
+	\type		R/W
+*/
+const unsigned char KEY1 = 0x4D;
+
+const unsigned char KEY1_ESS = 0x01;
+const unsigned char KEY1_CS  = 0x80;
+
+/*
+	\name		VBK
+	\info		VRAM bank select register
+
+	\address	0xFF4F
+	\type		R/W
+*/
+const unsigned char VBK = 0x4F;
+
+const unsigned char VBK_BANK = 0x01;
+
+/*
+\name		SVBK
+\info		WRAM bank select register
+
+\address	0xFF70
+\type		R/W
+*/
+const unsigned char SVBK = 0x70;
+
+const unsigned char SVBK_BANK = 0x07;
