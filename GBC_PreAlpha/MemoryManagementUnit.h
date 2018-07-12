@@ -25,50 +25,21 @@ private:
 	unsigned char IROM_banks = 8;
 
 	//////////////Memory Base Pointers//////////////
-	unsigned char* baseROM_0 = nullptr;
-	std::vector<unsigned char*> baseROM_n;
-	std::vector<unsigned char*> baseCRAM;
-	std::vector<unsigned char*> baseBGD1;
-	std::vector<unsigned char*> baseBGD2;
-	std::vector<unsigned char*> baseERAM_n;
-	unsigned char* baseIRAM_0 = nullptr;
-	std::vector<unsigned char*> baseIRAM_n;
+	unsigned char* baseROM_0   = nullptr;
+	std::vector<unsigned char*>  baseROM_n;
+	std::vector<unsigned char*>  baseCRAM;
+	std::vector<unsigned char*>  baseBGD1;
+	std::vector<unsigned char*>  baseBGD2;
+	std::vector<unsigned char*>  baseERAM_n;
+	unsigned char* baseIRAM_0  = nullptr;
+	std::vector<unsigned char*>  baseIRAM_n;
 	unsigned char* baseEchoRAM = nullptr;
-	unsigned char* baseOAM = nullptr;
-	unsigned char* baseUUM = nullptr;
-	unsigned char* baseIOREG = nullptr;
-	unsigned char* baseZP = nullptr;
+	unsigned char* baseOAM     = nullptr;
+	unsigned char* baseUUM     = nullptr;
+	unsigned char* baseIOREG   = nullptr;
+	unsigned char* baseZP      = nullptr;
 
-	///////////////IO Register Pointers//////////////
-	unsigned char* P1_ptr   = nullptr;
-	unsigned char* SB_ptr   = nullptr;
-	unsigned char* SC_ptr   = nullptr;
-	unsigned char* DIV_ptr  = nullptr;
-	unsigned char* TIMA_ptr = nullptr;
-	unsigned char* TMA_ptr  = nullptr;
-	unsigned char* TAC_ptr  = nullptr;
-	unsigned char* IF_ptr   = nullptr;
-	unsigned char* IE_ptr   = nullptr;
-	unsigned char* LCDC_ptr = nullptr;
-	unsigned char* STAT_ptr = nullptr;
-	unsigned char* SCY_ptr  = nullptr;
-	unsigned char* SCX_ptr  = nullptr;
-	unsigned char* LY_ptr   = nullptr;
-	unsigned char* LYC_ptr  = nullptr;
-	unsigned char* DMA_ptr  = nullptr;
-	unsigned char* BGP_ptr  = nullptr;
-	unsigned char* OBP0_ptr = nullptr;
-	unsigned char* OBP1_ptr = nullptr;
-	unsigned char* BCPS_ptr = nullptr;
-	unsigned char* BCPD_ptr = nullptr;
-	unsigned char* OCPS_ptr = nullptr;
-	unsigned char* OCPD_ptr = nullptr;
-	unsigned char* WY_ptr   = nullptr;
-	unsigned char* WX_ptr   = nullptr;
-	unsigned char* KEY1_ptr = nullptr;
-	unsigned char* VBK_ptr  = nullptr;
-	unsigned char* SVBK_ptr = nullptr;
-
+	///////////////IO Register Offests//////////////
 	std::unordered_map<unsigned short, unsigned char> offsetHash;
 
 public:
@@ -77,7 +48,7 @@ public:
 	void write(unsigned short address, unsigned char value);
 	unsigned char read(unsigned short address);
 
-	unsigned char getReg(const unsigned char reg, const unsigned char bit = 0xFF);
+	unsigned char getReg(const unsigned char& reg, const unsigned char& bit = 0xFF);
 
 	MemoryManagementUnit();
 	~MemoryManagementUnit();

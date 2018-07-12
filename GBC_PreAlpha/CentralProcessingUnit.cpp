@@ -1,4 +1,6 @@
 #include <iostream>
+#include <sstream>
+#include <iomanip>
 
 #include "CentralProcessingUnit.h"
 #include "InstructionSet.h"
@@ -2583,14 +2585,14 @@ void CentralProcessingUnit::decodeExec16bit(unsigned char &OpCode)
 
 void CentralProcessingUnit::printGPR()
 {
-	std::cout << "------------------------" << std::endl;
-	std::cout << "AF: 0x" << std::hex << AF << std::endl;
-	std::cout << "BC: 0x" << std::hex << BC << std::endl;
-	std::cout << "DE: 0x" << std::hex << DE << std::endl;
-	std::cout << "HL: 0x" << std::hex << HL << std::endl;
+	std::cout << std::string(100,'\n') << std::endl;
+	std::cout << "AF: 0x" << std::setfill('0') << std::setw(sizeof(unsigned short) * 2) << std::hex << AF << std::endl;
+	std::cout << "DE: 0x" << std::setfill('0') << std::setw(sizeof(unsigned short) * 2) << std::hex << DE << std::endl;
+	std::cout << "BC: 0x" << std::setfill('0') << std::setw(sizeof(unsigned short) * 2) << std::hex << BC << std::endl;
+	std::cout << "HL: 0x" << std::setfill('0') << std::setw(sizeof(unsigned short) * 2) << std::hex << HL << std::endl;
 	std::cout << std::endl;
-	std::cout << "SP: 0x" << std::hex << SP << std::endl;
-	std::cout << "PC: 0x" << std::hex << PC << std::endl;
+	std::cout << "SP: 0x" << std::setfill('0') << std::setw(sizeof(unsigned short) * 2) << std::hex << SP << std::endl;
+	std::cout << "PC: 0x" << std::setfill('0') << std::setw(sizeof(unsigned short) * 2) << std::hex << PC << std::endl;
 	
 }
 

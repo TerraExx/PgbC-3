@@ -1,3 +1,5 @@
+#include <cstring>
+
 #include "MemoryManagementUnit.h"
 #include "Memory_Info.h"
 #include "Reg_Info.h"
@@ -69,7 +71,7 @@ void MemoryManagementUnit::initMMU(char * cartridgeBase)
 	////////////////////Set Base Pointers//////////////////////
 	BP          = new unsigned char[memorySize];
 	baseROM_0   = BP;
-	for (unsigned char count = 0; count < ROM_banks; count++)
+	for (unsigned char count = 0; count < (ROM_banks - 1); count++)
 	{
 		baseROM_n.push_back(baseROM_0 + ROM_B0_SIZE + (ROM_Bn_SIZE * count));
 	}
@@ -84,7 +86,7 @@ void MemoryManagementUnit::initMMU(char * cartridgeBase)
 		baseERAM_n.push_back(baseBGD2.back() + BGD2_SIZE + (ERAM_SIZE * count));
 	}
 	baseIRAM_0  = baseERAM_n.back() + ERAM_SIZE;
-	for (unsigned char count = 0; count < 8; count++)
+	for (unsigned char count = 0; count < 7; count++)
 	{
 		baseIRAM_n.push_back(baseIRAM_0 + IRAM_B0_SIZE + (IRAM_Bn_SIZE * count));
 	}
@@ -94,36 +96,10 @@ void MemoryManagementUnit::initMMU(char * cartridgeBase)
 	baseIOREG   = baseUUM			+ UUM_SIZE;
 	baseZP      = baseIOREG			+ IOREG_SIZE;
 
-	////////////////////Init Registers//////////////////////
-	P1_ptr   = baseIOREG + P1;
-	SB_ptr   = baseIOREG + SB;
-	SC_ptr   = baseIOREG + SC;
-	DIV_ptr  = baseIOREG + DIV;
-	TIMA_ptr = baseIOREG + TIMA;
-	TMA_ptr  = baseIOREG + TMA;
-	TAC_ptr  = baseIOREG + TAC;
-	IF_ptr   = baseIOREG + IF;
-	IE_ptr   = baseIOREG + IE;
-	LCDC_ptr = baseIOREG + LCDC;
-	STAT_ptr = baseIOREG + STAT;
-	SCY_ptr  = baseIOREG + SCY;
-	SCX_ptr  = baseIOREG + SCX;
-	LY_ptr   = baseIOREG + LY;
-	LYC_ptr  = baseIOREG + LYC;
-	DMA_ptr  = baseIOREG + DMA;
-	BGP_ptr  = baseIOREG + BGP;
-	OBP0_ptr = baseIOREG + OBP0;
-	OBP1_ptr = baseIOREG + OBP1;
-	BCPS_ptr = baseIOREG + BCPS;
-	BCPD_ptr = baseIOREG + BCPD;
-	OCPS_ptr = baseIOREG + OCPS;
-	OCPD_ptr = baseIOREG + OCPD;
-	WY_ptr   = baseIOREG + WY;
-	WX_ptr   = baseIOREG + WX;
-	KEY1_ptr = baseIOREG + KEY1;
-	VBK_ptr  = baseIOREG + VBK;
-	SVBK_ptr = baseIOREG + SVBK;
+	////////////////////Copy Cartridge ROM//////////////////////
+	std::memcpy(baseROM_0, cartridgeBase, ROM_Bn_SIZE*ROM_banks);
 
+	////////////////////Init Registers//////////////////////
 	auto getOffset = [](unsigned char mask) -> unsigned char
 	{
 		unsigned char ret = 0;
@@ -271,13 +247,13 @@ void MemoryManagementUnit::write(unsigned short address, unsigned char value)
 
 unsigned char MemoryManagementUnit::read(unsigned short address)
 {
-	unsigned char value;
+	unsigned char value = 0x00;
 
 	if (address < ROM_Bn_OFFSET)
 	{
-		if ((runningBootCode == true) && (address <= 0xff))
+		if ((runningBootCode == true) && (address <= 0x00ff))
 		{
-			BootROM[address];
+			value = BootROM[address];
 		}
 		else
 		{
@@ -332,6 +308,25 @@ unsigned char MemoryManagementUnit::read(unsigned short address)
 	else
 	{
 		value = baseZP[address - ZP_OFFSET];
+	}
+
+	return value;
+}
+
+unsigned char MemoryManagementUnit::getReg(const unsigned char& reg, const unsigned char& bit)
+{
+	unsigned char value = read(reg);
+	unsigned char mask = bit;
+
+	if (bit != 0xff)
+	{
+		value = value & bit;
+
+		while (!(mask & 0x01))
+		{
+			mask = mask >> 1;
+			value = value >> 1;
+		}
 	}
 
 	return value;

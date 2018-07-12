@@ -31,7 +31,7 @@ int main(int argc, char* argv[]) {
 	{
 		CPU.step();
 
-		CPU.printGPR();
+		//CPU.printGPR();
 	}
 
 	return 0;

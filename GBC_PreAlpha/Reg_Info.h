@@ -6,7 +6,7 @@
 	\address	0xFF00
 	\type		R/W
 */
-const unsigned char P1 = 0x00;
+const unsigned char P1 = 0xFF00;
 
 const unsigned char P1_P10_IN  = 0x01;
 const unsigned char P1_P11_IN  = 0x02;
@@ -23,7 +23,7 @@ const unsigned char P1_P15_OUT = 0x20;
 	\address	0xFF01
 	\type		R/W
 */
-const unsigned char SB = 0x01;
+const unsigned char SB = 0xFF01;
 
 /*
 	\name		SC
@@ -32,7 +32,7 @@ const unsigned char SB = 0x01;
 	\address	0xFF02
 	\type		R/W
 */
-const unsigned char SC = 0x02;
+const unsigned char SC = 0xFF02;
 
 const unsigned char SC_TRANSFER_START = 0x1;
 const unsigned char SC_CLOCK_SPEED    = 0x2;
@@ -45,7 +45,7 @@ const unsigned char SC_SHIFT_CLOCK    = 0x8;
 	\address	0xFF04
 	\type		R/W
 */
-const unsigned char DIV = 0x04;
+const unsigned char DIV = 0xFF04;
 
 /*
 	\name		TIMA
@@ -55,7 +55,7 @@ const unsigned char DIV = 0x04;
 	\address	0xFF05
 	\type		R/W
 */
-const unsigned char TIMA = 0x05;
+const unsigned char TIMA = 0xFF05;
 
 /*
 	\name		TMA
@@ -64,7 +64,7 @@ const unsigned char TIMA = 0x05;
 	\address	0xFF06
 	\type		R/W
 */
-const unsigned char TMA = 0x06;
+const unsigned char TMA = 0xFF06;
 
 /*
 	\name		TAC
@@ -73,7 +73,7 @@ const unsigned char TMA = 0x06;
 	\address	0xFF07
 	\type		R/W
 */
-const unsigned char TAC = 0x7;
+const unsigned char TAC = 0xFF07;
 
 const unsigned char TAC_INPUT_CLOCK = 0x03;
 const unsigned char TAC_TIMER_START = 0x04;
@@ -85,7 +85,7 @@ const unsigned char TAC_TIMER_START = 0x04;
 	\address	0xFF0F
 \	type		R/W
 */
-const unsigned char IF = 0x0F;
+const unsigned char IF = 0xFF0F;
 
 const unsigned char IF_VB   = 0x01;
 const unsigned char IF_LCDC = 0x02;
@@ -100,7 +100,7 @@ const unsigned char IF_P1   = 0x10;
 	\address	0xFFFF
 	\type		R/W
 */
-const unsigned char IE = 0xFF;
+const unsigned char IE = 0xFFFF;
 
 const unsigned char IE_VB   = 0x01;
 const unsigned char IE_LCDC = 0x02;
@@ -115,7 +115,7 @@ const unsigned char IE_P1   = 0x10;
 	\address	0xFF40
 	\type		R/W
 */
-const unsigned char LCDC = 0x40;
+const unsigned char LCDC = 0xFF40;
 
 const unsigned char LCDC_BG_DISPLAY_STATE		= 0x01;
 const unsigned char LCDC_OBJ_ON					= 0x02;
@@ -133,7 +133,7 @@ const unsigned char LCDC_OPERATION_STOP			= 0x80;
 	\address	0xFF41
 	\type		R/W
 */
-const unsigned char STAT = 0x41;
+const unsigned char STAT = 0xFF41;
 
 const unsigned char STAT_MODE_FLAG  = 0x03;
 const unsigned char STAT_MATCH_FLAG = 0x04;
@@ -149,7 +149,7 @@ const unsigned char STAT_LYC        = 0x40;
 	\address	0xFF42
 	\type		R/W
 */
-const unsigned char SCY = 0x42;
+const unsigned char SCY = 0xFF42;
 
 /*
 	\name		SCX
@@ -158,7 +158,7 @@ const unsigned char SCY = 0x42;
 	\address	0xFF43
 	\type		R/W
 */
-const unsigned char SCX = 0x43;
+const unsigned char SCX = 0xFF43;
 
 /*
 	\name		LY
@@ -167,7 +167,7 @@ const unsigned char SCX = 0x43;
 	\address	0xFF44
 	\type		R
 */
-const unsigned char LY = 0x44;
+const unsigned char LY = 0xFF44;
 
 /*
 	\name		LYC
@@ -176,7 +176,7 @@ const unsigned char LY = 0x44;
 	\address	0xFF45
 	\type		R/W
 */
-const unsigned char LYC = 0x45;
+const unsigned char LYC = 0xFF45;
 
 /*
 	\name		DMA
@@ -185,7 +185,7 @@ const unsigned char LYC = 0x45;
 	\address	0xFF46
 	\type		W
 */
-const unsigned char DMA = 0x46;
+const unsigned char DMA = 0xFF46;
 
 /*
 	\name		BGP
@@ -194,7 +194,7 @@ const unsigned char DMA = 0x46;
 	\address	0xFF47
 	\type		W
 */
-const unsigned char BGP = 0x47;
+const unsigned char BGP = 0xFF47;
 
 const unsigned char BGP_00 = 0x03;
 const unsigned char BGP_01 = 0x0C;
@@ -208,7 +208,7 @@ const unsigned char BGP_11 = 0xC0;
 	\address	0xFF48
 	\type		W
 */
-const unsigned char OBP0 = 0x48;
+const unsigned char OBP0 = 0xFF48;
 
 const unsigned char OBP0_00 = 0x03;
 const unsigned char OBP0_01 = 0x0C;
@@ -222,7 +222,7 @@ const unsigned char OBP0_11 = 0xC0;
 \address	0xFF49
 \type		W
 */
-const unsigned char OBP1 = 0x49;
+const unsigned char OBP1 = 0xFF49;
 
 const unsigned char OBP1_00 = 0x03;
 const unsigned char OBP1_01 = 0x0C;
@@ -236,7 +236,7 @@ const unsigned char OBP1_11 = 0xC0;
 	\address	0xFF68
 	\type		R/W
 */
-const unsigned char BCPS = 0x68;
+const unsigned char BCPS = 0xFF68;
 
 const unsigned char BCPS_HL				 = 0x01;
 const unsigned char BCPS_PALLET_DATA_NUM = 0x06;
@@ -250,7 +250,7 @@ const unsigned char BCPS_FLAG			 = 0x80;
 	\address	0xFF69
 	\type		R/W
 */
-const unsigned char BCPD = 0x69;
+const unsigned char BCPD = 0xFF69;
 
 /*
 	\name		OCPS
@@ -259,7 +259,7 @@ const unsigned char BCPD = 0x69;
 	\address	0xFF6A
 	\type		R/W
 */
-const unsigned char OCPS = 0x6A;
+const unsigned char OCPS = 0xFF6A;
 
 const unsigned char OCPS_HL              = 0x01;
 const unsigned char OCPS_PALLET_DATA_NUM = 0x06;
@@ -273,7 +273,7 @@ const unsigned char OCPS_FLAG            = 0x80;
 	\address	0xFF6B
 	\type		R/W
 */
-const unsigned char OCPD = 0x6B;
+const unsigned char OCPD = 0xFF6B;
 
 /*
 	\name		WY
@@ -282,7 +282,7 @@ const unsigned char OCPD = 0x6B;
 	\address	0xFF4A
 	\type		R/W
 */
-const unsigned char WY = 0x4A;
+const unsigned char WY = 0xFF4A;
 
 /*
 	\name		WX
@@ -291,7 +291,7 @@ const unsigned char WY = 0x4A;
 	\address	0xFF4B
 	\type		R/W
 */
-const unsigned char WX = 0x4B;
+const unsigned char WX = 0xFF4B;
 
 /*
 	\name		KEY1
@@ -300,7 +300,7 @@ const unsigned char WX = 0x4B;
 	\address	0xFF4D
 	\type		R/W
 */
-const unsigned char KEY1 = 0x4D;
+const unsigned char KEY1 = 0xFF4D;
 
 const unsigned char KEY1_ESS = 0x01;
 const unsigned char KEY1_CS  = 0x80;
@@ -312,17 +312,17 @@ const unsigned char KEY1_CS  = 0x80;
 	\address	0xFF4F
 	\type		R/W
 */
-const unsigned char VBK = 0x4F;
+const unsigned char VBK = 0xFF4F;
 
 const unsigned char VBK_BANK = 0x01;
 
 /*
-\name		SVBK
-\info		WRAM bank select register
+	\name		SVBK
+	\info		WRAM bank select register
 
-\address	0xFF70
-\type		R/W
+	\address	0xFF70
+	\type		R/W
 */
-const unsigned char SVBK = 0x70;
+const unsigned char SVBK = 0xFF70;
 
 const unsigned char SVBK_BANK = 0x07;
