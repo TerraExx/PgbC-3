@@ -124,6 +124,7 @@
     <ClCompile Include="CentralProcessingUnit.cpp" />
     <ClCompile Include="MemoryManagementUnit.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="PixelProcessingUnit.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cartridge_Info.h" />
@@ -131,6 +132,7 @@
     <ClInclude Include="InstructionSet.h" />
     <ClInclude Include="MemoryManagementUnit.h" />
     <ClInclude Include="Memory_Info.h" />
+    <ClInclude Include="PixelProcessingUnit.h" />
     <ClInclude Include="Reg_Info.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

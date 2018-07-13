@@ -3,11 +3,13 @@
 
 #include "Cartridge_Info.h"
 #include "CentralProcessingUnit.h"
+#include "PixelProcessingUnit.h"
 
 int main(int argc, char* argv[]) {
 
 	char *cartridgeBase;
 	MemoryManagementUnit MMU;
+	PixelProcessingUnit PPU(MMU);
 	CentralProcessingUnit CPU(MMU);
 
 	std::ifstream file("C:\\ROMs\\Tetris DX (World).gbc", std::ios::in | std::ios::binary | std::ios::ate);
@@ -26,6 +28,8 @@ int main(int argc, char* argv[]) {
 	file.close();
 
 	MMU.initMMU(cartridgeBase);
+
+	delete[] cartridgeBase;
 
 	while (1)
 	{

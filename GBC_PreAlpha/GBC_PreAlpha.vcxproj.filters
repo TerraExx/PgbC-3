@@ -39,6 +39,9 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PixelProcessingUnit.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cartridge_Info.h">
@@ -58,6 +61,9 @@
     </ClInclude>
     <ClInclude Include="Reg_Info.h">
       <Filter>Header Files\MMU</Filter>
+    </ClInclude>
+    <ClInclude Include="PixelProcessingUnit.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

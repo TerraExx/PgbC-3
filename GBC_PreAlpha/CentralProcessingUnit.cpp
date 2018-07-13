@@ -448,8 +448,17 @@ void CentralProcessingUnit::addSP(unsigned char value)
 	incrementClock(8);
 }
 
+unsigned short CBP = 0x0058;
+
 void CentralProcessingUnit::step()
 {
+	//DEBUG - BP
+	if (PC == CBP)
+	{
+		unsigned char proba = 1;
+		proba++;
+	}
+
 	// fetch
 	unsigned char OpCode = fetchByte();
 
