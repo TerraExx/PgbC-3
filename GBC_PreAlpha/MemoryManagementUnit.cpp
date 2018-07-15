@@ -201,6 +201,12 @@ void MemoryManagementUnit::write(unsigned short address, unsigned char value)
 	else if (address < BGD1_OFFSET)
 	{
 		baseCRAM.at(0)[address - CRAM_OFFSET] = value;
+
+		// ReDraw Tile
+		VRAM_D.draw((address - CRAM_OFFSET) / 0x10
+				   , baseCRAM[0] + 0x10 * ((address - CRAM_OFFSET) / 0x10)
+			       , getReg(BGP)
+		           );
 	}
 	else if (address < BGD2_OFFSET)
 	{
@@ -313,7 +319,7 @@ unsigned char MemoryManagementUnit::read(unsigned short address)
 	return value;
 }
 
-unsigned char MemoryManagementUnit::getReg(const unsigned char& reg, const unsigned char& bit)
+unsigned char MemoryManagementUnit::getReg(const unsigned short& reg, const unsigned char& bit)
 {
 	unsigned char value = read(reg);
 	unsigned char mask = bit;

@@ -22,7 +22,7 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{814283F7-3DB0-4961-AD3F-6F874699F94C}</ProjectGuid>
     <RootNamespace>GBCPreAlpha</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -70,7 +70,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\Josip\source\repos\GBC_PreAlpha\GBC_PreAlpha;$(IncludePath)</IncludePath>
+    <IncludePath>C:\SDL\SDL2-2.0.8\include;C:\Users\Josip\source\repos\GBC_PreAlpha\GBC_PreAlpha;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\SDL\SDL2-2.0.8\lib\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -87,9 +88,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
+      <AdditionalLibraryDirectories>C:\SDL\SDL2-2.0.8\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -125,6 +130,7 @@
     <ClCompile Include="MemoryManagementUnit.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="PixelProcessingUnit.cpp" />
+    <ClCompile Include="VRAM_Debug.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cartridge_Info.h" />
@@ -134,6 +140,7 @@
     <ClInclude Include="Memory_Info.h" />
     <ClInclude Include="PixelProcessingUnit.h" />
     <ClInclude Include="Reg_Info.h" />
+    <ClInclude Include="VRAM_Debug.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

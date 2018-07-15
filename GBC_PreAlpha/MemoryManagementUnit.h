@@ -6,11 +6,13 @@
 #include <functional>
 
 #include "Cartridge_Info.h"
+#include "VRAM_Debug.h"
 
 class MemoryManagementUnit
 {
 private:
 	Cartridge_Info cartInfo;
+	VRAM_Debug VRAM_D;
 
 	bool runningBootCode = true;
 	unsigned char *BP = nullptr;
@@ -48,7 +50,7 @@ public:
 	void write(unsigned short address, unsigned char value);
 	unsigned char read(unsigned short address);
 
-	unsigned char getReg(const unsigned char& reg, const unsigned char& bit = 0xFF);
+	unsigned char getReg(const unsigned short& reg, const unsigned char& bit = 0xFF);
 
 	MemoryManagementUnit();
 	~MemoryManagementUnit();

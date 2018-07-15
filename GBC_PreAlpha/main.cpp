@@ -5,12 +5,14 @@
 #include "CentralProcessingUnit.h"
 #include "PixelProcessingUnit.h"
 
-int main(int argc, char* argv[]) {
+bool DEBUG_PRINTOUT = false;
 
-	char *cartridgeBase;
+int main(int argc, char* argv[]) {
 	MemoryManagementUnit MMU;
 	PixelProcessingUnit PPU(MMU);
 	CentralProcessingUnit CPU(MMU);
+
+	char *cartridgeBase;
 
 	std::ifstream file("C:\\ROMs\\Tetris DX (World).gbc", std::ios::in | std::ios::binary | std::ios::ate);
 
@@ -18,7 +20,6 @@ int main(int argc, char* argv[]) {
 	{
 		std::cout << "Unable to open file\n";
 		exit(1);
-
 	}
 
 	unsigned int size = file.tellg();
@@ -34,8 +35,6 @@ int main(int argc, char* argv[]) {
 	while (1)
 	{
 		CPU.step();
-
-		//CPU.printGPR();
 	}
 
 	return 0;

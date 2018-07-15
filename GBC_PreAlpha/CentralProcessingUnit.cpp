@@ -448,7 +448,7 @@ void CentralProcessingUnit::addSP(unsigned char value)
 	incrementClock(8);
 }
 
-unsigned short CBP = 0x0058;
+unsigned short CBP = 0x0040;
 
 void CentralProcessingUnit::step()
 {
