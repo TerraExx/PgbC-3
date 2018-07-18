@@ -4,6 +4,7 @@
 
 #include "CentralProcessingUnit.h"
 #include "InstructionSet.h"
+#include "Reg_Info.h"
 
 const char ZERO_FLAG_MASK		= 0x80;
 const char SUB_FLAG_MASK		= 0x40;
@@ -472,6 +473,11 @@ void CentralProcessingUnit::step()
 	{
 		decodeExec8bit(OpCode);
 	}
+}
+
+unsigned int CentralProcessingUnit::getCurrentClock()
+{
+	return CurrentClock;
 }
 
 void CentralProcessingUnit::decodeExec8bit(unsigned char &OpCode)
@@ -2592,6 +2598,12 @@ void CentralProcessingUnit::decodeExec16bit(unsigned char &OpCode)
 	}
 }
 
+void CentralProcessingUnit::init()
+{
+	// Init reg
+	MMU.write(LCDC, 0x0);
+}
+
 void CentralProcessingUnit::printGPR()
 {
 	std::cout << std::string(100,'\n') << std::endl;
@@ -2608,6 +2620,7 @@ void CentralProcessingUnit::printGPR()
 CentralProcessingUnit::CentralProcessingUnit(MemoryManagementUnit & MMU) 
 	: MMU(MMU)
 {
+	// Init GPR
 	AF = 0;
 	BC = 0;
 	DE = 0;

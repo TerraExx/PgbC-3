@@ -7,7 +7,7 @@ class CentralProcessingUnit
 private:
 	MemoryManagementUnit &MMU;
 
-	int CurrentClock = 0;
+	unsigned int CurrentClock = 0;
 
 	//////////Interrupt Control//////////////////
 	bool IME = false;
@@ -155,9 +155,13 @@ public:
 	void call();
 
 	void step();
+	unsigned int getCurrentClock();
 
 	void decodeExec8bit(unsigned char &OpCode);
 	void decodeExec16bit(unsigned char &OpCode);
+
+	//////////////Init Registers ect./////////////////
+	void init();
 
 	//////////////Debug Printout/////////////////
 	void printGPR();

@@ -9,8 +9,8 @@ bool DEBUG_PRINTOUT = false;
 
 int main(int argc, char* argv[]) {
 	MemoryManagementUnit MMU;
-	PixelProcessingUnit PPU(MMU);
 	CentralProcessingUnit CPU(MMU);
+	PixelProcessingUnit PPU(MMU, CPU);
 
 	char *cartridgeBase;
 
@@ -32,9 +32,12 @@ int main(int argc, char* argv[]) {
 
 	delete[] cartridgeBase;
 
+	CPU.init();
+
 	while (1)
 	{
 		CPU.step();
+		PPU.step();
 	}
 
 	return 0;

@@ -25,11 +25,14 @@
     <Filter Include="Source Files\MMU">
       <UniqueIdentifier>{998e2f48-d3d0-4610-b36b-d2fb88761a24}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\PPU">
+      <UniqueIdentifier>{b09dbc55-1065-437a-899d-02728e754fe1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\PPU">
+      <UniqueIdentifier>{5c1fdcde-e120-4e2d-9afb-95cf6fe7e51f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Cartridge_Info.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CentralProcessingUnit.cpp">
       <Filter>Source Files\CPU</Filter>
     </ClCompile>
@@ -39,17 +42,17 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Cartridge_Info.cpp">
+      <Filter>Source Files\MMU</Filter>
+    </ClCompile>
     <ClCompile Include="PixelProcessingUnit.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\PPU</Filter>
     </ClCompile>
     <ClCompile Include="VRAM_Debug.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\PPU</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Cartridge_Info.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Memory_Info.h">
       <Filter>Header Files\MMU</Filter>
     </ClInclude>
@@ -65,11 +68,14 @@
     <ClInclude Include="Reg_Info.h">
       <Filter>Header Files\MMU</Filter>
     </ClInclude>
-    <ClInclude Include="PixelProcessingUnit.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="VRAM_Debug.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\PPU</Filter>
+    </ClInclude>
+    <ClInclude Include="PixelProcessingUnit.h">
+      <Filter>Header Files\PPU</Filter>
+    </ClInclude>
+    <ClInclude Include="Cartridge_Info.h">
+      <Filter>Header Files\MMU</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
