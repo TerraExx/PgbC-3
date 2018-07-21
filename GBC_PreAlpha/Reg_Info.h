@@ -117,14 +117,14 @@ const unsigned char IE_P1   = 0x10;
 */
 const unsigned short LCDC = 0xFF40;
 
-const unsigned char LCDC_BG_DISPLAY_STATE		= 0x01;
+const unsigned char LCDC_BG_PRIORITY		    = 0x01;
 const unsigned char LCDC_OBJ_ON					= 0x02;
 const unsigned char LCDC_OBJ_BLOCK_COMPOSITION	= 0x04;
 const unsigned char LCDC_BG_CODE_AREA			= 0x08;
 const unsigned char LCDC_BG_CHARACTER_DATA		= 0x10;
 const unsigned char LCDC_WINDOW_ON				= 0x20;
 const unsigned char LCDC_WINDOW_CODE_AREA		= 0x40;
-const unsigned char LCDC_OPERATION_STOP			= 0x80;
+const unsigned char LCDC_DISPLAY_ENABLE			= 0x80;
 
 /*
 	\name		STAT

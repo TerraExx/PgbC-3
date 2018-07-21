@@ -51,6 +51,9 @@
     <ClCompile Include="VRAM_Debug.cpp">
       <Filter>Source Files\PPU</Filter>
     </ClCompile>
+    <ClCompile Include="BGD_Debug.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Memory_Info.h">
@@ -76,6 +79,12 @@
     </ClInclude>
     <ClInclude Include="Cartridge_Info.h">
       <Filter>Header Files\MMU</Filter>
+    </ClInclude>
+    <ClInclude Include="BGD_Debug.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Video_Debug.h">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

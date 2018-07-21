@@ -125,6 +125,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="BGD_Debug.cpp" />
     <ClCompile Include="Cartridge_Info.cpp" />
     <ClCompile Include="CentralProcessingUnit.cpp" />
     <ClCompile Include="MemoryManagementUnit.cpp" />
@@ -133,6 +134,7 @@
     <ClCompile Include="VRAM_Debug.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BGD_Debug.h" />
     <ClInclude Include="Cartridge_Info.h" />
     <ClInclude Include="CentralProcessingUnit.h" />
     <ClInclude Include="InstructionSet.h" />
@@ -140,6 +142,7 @@
     <ClInclude Include="Memory_Info.h" />
     <ClInclude Include="PixelProcessingUnit.h" />
     <ClInclude Include="Reg_Info.h" />
+    <ClInclude Include="Video_Debug.h" />
     <ClInclude Include="VRAM_Debug.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -483,7 +483,7 @@ unsigned int CentralProcessingUnit::getCurrentClock()
 void CentralProcessingUnit::decodeExec8bit(unsigned char &OpCode)
 {
 	unsigned char d8;
-	unsigned char d16;
+	unsigned short d16;
 
 	// execute
 	switch (OpCode)
@@ -2602,6 +2602,8 @@ void CentralProcessingUnit::init()
 {
 	// Init reg
 	MMU.write(LCDC, 0x0);
+	MMU.write(SCX, 0x0);
+	MMU.write(SCY, 0x0);
 }
 
 void CentralProcessingUnit::printGPR()

@@ -4,8 +4,11 @@
 #include "Cartridge_Info.h"
 #include "CentralProcessingUnit.h"
 #include "PixelProcessingUnit.h"
+#include "Video_Debug.h"
 
 bool DEBUG_PRINTOUT = false;
+
+BGD_Debug  BGD_1_D;
 
 int main(int argc, char* argv[]) {
 	MemoryManagementUnit MMU;

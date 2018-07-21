@@ -3,6 +3,7 @@
 #include "MemoryManagementUnit.h"
 #include "Memory_Info.h"
 #include "Reg_Info.h"
+#include "Video_Debug.h"
 
 unsigned char BootROM[] = 
 {
@@ -69,7 +70,7 @@ void MemoryManagementUnit::initMMU(char * cartridgeBase)
 	memorySize += ZP_SIZE;
 
 	////////////////////Set Base Pointers//////////////////////
-	BP          = new unsigned char[memorySize];
+	BP = new unsigned char[memorySize] {0};
 	baseROM_0   = BP;
 	for (unsigned char count = 0; count < (ROM_banks - 1); count++)
 	{
@@ -144,14 +145,14 @@ void MemoryManagementUnit::initMMU(char * cartridgeBase)
 	offsetHash.insert({ getHash(IE, IE_SIO) , getOffset(IE_SIO) });
 	offsetHash.insert({ getHash(IE, IE_P1) , getOffset(IE_P1) });
 
-	offsetHash.insert({ getHash(LCDC, LCDC_BG_DISPLAY_STATE) , getOffset(LCDC_BG_DISPLAY_STATE) });
+	offsetHash.insert({ getHash(LCDC, LCDC_BG_PRIORITY) , getOffset(LCDC_BG_PRIORITY) });
 	offsetHash.insert({ getHash(LCDC, LCDC_OBJ_ON) , getOffset(LCDC_OBJ_ON) });
 	offsetHash.insert({ getHash(LCDC, LCDC_OBJ_BLOCK_COMPOSITION) , getOffset(LCDC_OBJ_BLOCK_COMPOSITION) });
 	offsetHash.insert({ getHash(LCDC, LCDC_BG_CODE_AREA) , getOffset(LCDC_BG_CODE_AREA) });
 	offsetHash.insert({ getHash(LCDC, LCDC_BG_CHARACTER_DATA) , getOffset(LCDC_BG_CHARACTER_DATA) });
 	offsetHash.insert({ getHash(LCDC, LCDC_WINDOW_ON) , getOffset(LCDC_WINDOW_ON) });
 	offsetHash.insert({ getHash(LCDC, LCDC_WINDOW_CODE_AREA) , getOffset(LCDC_WINDOW_CODE_AREA) });
-	offsetHash.insert({ getHash(LCDC, LCDC_OPERATION_STOP) , getOffset(LCDC_OPERATION_STOP) });
+	offsetHash.insert({ getHash(LCDC, LCDC_DISPLAY_ENABLE) , getOffset(LCDC_DISPLAY_ENABLE) });
 	
 	offsetHash.insert({ getHash(STAT, STAT_MODE_FLAG) , getOffset(STAT_MODE_FLAG) });
 	offsetHash.insert({ getHash(STAT, STAT_MATCH_FLAG) , getOffset(STAT_MATCH_FLAG) });
@@ -211,6 +212,12 @@ void MemoryManagementUnit::write(unsigned short address, unsigned char value)
 	else if (address < BGD2_OFFSET)
 	{
 		baseBGD1.at(0)[address - BGD1_OFFSET] = value;
+
+		// ReDraw Background
+		BGD_1_D.drawBg( address - BGD1_OFFSET
+				      , baseCRAM[0] + 0x10 * value
+				      , getReg(BGP)
+		              );
 	}
 	else if (address < ERAM_OFFSET)
 	{
