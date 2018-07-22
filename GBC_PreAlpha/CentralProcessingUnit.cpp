@@ -233,19 +233,16 @@ void CentralProcessingUnit::srlReg(unsigned char & reg)
 	(reg == 0) ? setFlagZ() : clearFlagZ();
 }
 
-void CentralProcessingUnit::incrementClock(char incrementValue)
+inline void CentralProcessingUnit::incrementClock(char incrementValue)
 {
 	CurrentClock += incrementValue;
 }
 
-unsigned char CentralProcessingUnit::fetchByte()
+inline unsigned char CentralProcessingUnit::fetchByte()
 {
-	unsigned char byte = MMU.read(PC);
-	++PC;
-
 	incrementClock(4);
 
-	return byte;
+	return MMU.read(PC++);
 }
 
 unsigned short CentralProcessingUnit::fetchShort()
@@ -449,12 +446,19 @@ void CentralProcessingUnit::addSP(unsigned char value)
 	incrementClock(8);
 }
 
-unsigned short CBP = 0x0040;
+unsigned short CBP = 0x0088;
+unsigned int CClockBP = 0x0088;
 
 void CentralProcessingUnit::step()
 {
 	//DEBUG - BP
 	if (PC == CBP)
+	{
+		unsigned char proba = 1;
+		proba++;
+	}
+
+	if (CurrentClock > CClockBP)
 	{
 		unsigned char proba = 1;
 		proba++;
@@ -480,7 +484,7 @@ unsigned int CentralProcessingUnit::getCurrentClock()
 	return CurrentClock;
 }
 
-void CentralProcessingUnit::decodeExec8bit(unsigned char &OpCode)
+inline void CentralProcessingUnit::decodeExec8bit(unsigned char &OpCode)
 {
 	unsigned char d8;
 	unsigned short d16;

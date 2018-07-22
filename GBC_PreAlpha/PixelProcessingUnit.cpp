@@ -18,12 +18,11 @@ void PixelProcessingUnit::init()
 	PPUstate = OAM_SEARCH;
 	MMU.write(STAT, OAM_SEARCH);
 
-	//viewPort_X = 0;
-	//viewPort_Y = 0;
+	//viewPort_X = 32;
+	//viewPort_Y = 25;
 	viewPort_X = MMU.getReg(SCX);
 	viewPort_Y = MMU.getReg(SCY);
 
-	updateViewPort();
 	fetcherUpdateTileNum();
 
 	lineBeingDrawn = 0;
@@ -36,6 +35,8 @@ void PixelProcessingUnit::init()
 
 void PixelProcessingUnit::updateViewPort()
 {
+	//unsigned char viewPort_X_new = viewPort_X;
+	//unsigned char viewPort_Y_new = viewPort_Y;
 	unsigned char viewPort_X_new = MMU.getReg(SCX);
 	unsigned char viewPort_Y_new = MMU.getReg(SCY);
 
@@ -57,8 +58,10 @@ void PixelProcessingUnit::updateViewPort()
 		--viewPort_Y;
 	}
 
+#ifdef BGD_DEBUG
 	// ReDraw Viewport
 	BGD_1_D.drawView(viewPort_X, viewPort_Y);
+#endif
 }
 
 void PixelProcessingUnit::FIFO_step()
@@ -79,8 +82,8 @@ void PixelProcessingUnit::FIFO_step()
 
 			++pixelBeingDrawn;
 
-			//Update screen
-			SDL_RenderPresent(Renderer);
+			////Update screen
+			//SDL_RenderPresent(Renderer);
 		}
 	}
 
@@ -201,6 +204,64 @@ void PixelProcessingUnit::drawPoint(e_bgp pallet, unsigned short x, unsigned sho
 	SDL_RenderDrawPoint(Renderer, x, y);
 }
 
+void PixelProcessingUnit::renderLine()
+{
+	unsigned short newFetchetTileNum = fetchetTileNum;
+	unsigned short tileCode = 0;
+	unsigned char  tileRow[2] = { 0, 0 };
+	unsigned char  pixelLine[168] = {0};
+	unsigned char  *pixelLinePtr = pixelLine;
+	unsigned short row = 0;
+	unsigned short bit_mask = 0;
+	unsigned short value = 0;
+
+	for (char tileNum = 0; tileNum < 21; ++tileNum)
+	{
+		if (tileNum != 0)
+		{
+			++newFetchetTileNum;
+			if ((newFetchetTileNum % 32) == 0)
+			{
+				newFetchetTileNum -= 32;
+			}
+		}
+
+		tileCode = MMU.read(BGD1_OFFSET + newFetchetTileNum);
+
+		if (tileCode != 0)
+		{
+			char proba = 0;
+			proba++;
+		}
+
+		tileRow[0] =
+			MMU.read(CRAM_OFFSET + tileCode * 0x10 + ((viewPort_Y + lineBeingDrawn) % 8) * 0x02);
+		tileRow[1] =
+			MMU.read(CRAM_OFFSET + tileCode * 0x10 + ((viewPort_Y + lineBeingDrawn) % 8) * 0x02 + 1);
+
+		row = (tileRow[0] << 8) | tileRow[1];
+		bit_mask = 0x8080;
+
+		for (char Pixel = 0; Pixel < 8; ++Pixel)
+		{
+			value = (row & bit_mask) >> (7 - Pixel);
+			value = (value & 0x01) | value >> 7;
+
+			bit_mask = bit_mask >> 1;
+			*pixelLinePtr = value;
+			++pixelLinePtr;
+		}
+	}
+
+	pixelLinePtr = pixelLine + viewPort_X % 8;
+
+	for (unsigned char pixel = 0; pixel < 160; ++pixel)
+	{
+		drawPoint(static_cast<e_bgp>(*pixelLinePtr), pixel, lineBeingDrawn);
+		++pixelLinePtr;
+	}
+}
+
 void PixelProcessingUnit::step()
 {
 	unsigned char LCDC_displayState = MMU.getReg(LCDC, LCDC_DISPLAY_ENABLE);
@@ -208,8 +269,8 @@ void PixelProcessingUnit::step()
 
 	//////////////Temp Var////////////////////
 	static unsigned char OAM_clock = 0;
-	static unsigned char HB_clock  = 0;
-	static unsigned char VB_clock  = 0;
+	static unsigned char HB_clock = 0;
+	static unsigned char VB_clock = 0;
 
 	static unsigned int  frameDrawDuration = 0;
 	//////////////////////////////////////////
@@ -221,7 +282,7 @@ void PixelProcessingUnit::step()
 	}
 	else
 	{
-		if ( OFF == PPUstate )
+		if (OFF == PPUstate)
 		{
 			init();
 		}
@@ -332,9 +393,114 @@ void PixelProcessingUnit::step()
 	}
 }
 
+void PixelProcessingUnit::step_try_2()
+{
+	unsigned char LCDC_displayState = MMU.getReg(LCDC, LCDC_DISPLAY_ENABLE);
+	unsigned int  newCPUclock = 0;
+	e_ppu_state   newPPUstate = OFF;
+
+	if (0 == LCDC_displayState)
+	{
+		if (OFF != PPUstate)
+		{
+			reset();
+			PPUclockCurFrame = 0;
+		}
+		return;
+	}
+	else
+	{
+		if (OFF == PPUstate)
+		{
+			init();
+		}
+	}
+
+	newCPUclock = CPU.getCurrentClock();
+	PPUclockCurFrame += newCPUclock - PPUclock;
+	PPUclock = newCPUclock;
+
+	if ((PPUclockCurFrame % 456) < OAM_LAST_CLOCK)
+	{
+		newPPUstate = OAM_SEARCH;
+	}
+	else if ((PPUclockCurFrame % 456) < PIXEL_TRANSFER_LAST_CLOCK)
+	{
+		newPPUstate = PIXEL_TRANSFER;
+	}
+	else if ((PPUclockCurFrame % 456) < H_BLANK_LAST_CLOCK)
+	{
+		newPPUstate = H_BLANK;
+	}
+
+	if (newPPUstate != PPUstate)
+	{
+		if (PPUstate == V_BLANK)
+		{
+			lineBeingDrawn = (PPUclockCurFrame / 456);
+			MMU.write(LY, lineBeingDrawn);
+
+			if (PPUclockCurFrame > FRAME_LAST_CLOCK)
+			{
+				PPUclockCurFrame = PPUclockCurFrame % FRAME_LAST_CLOCK;
+
+				lineBeingDrawn = 0;
+				MMU.write(LY, lineBeingDrawn);
+
+				updateViewPort();
+				fetchetTileNum =
+					(viewPort_X) / 8 + (((viewPort_Y + lineBeingDrawn) % 256) / 8) * 32;
+
+				PPUstate = OAM_SEARCH;
+				MMU.write(STAT, OAM_SEARCH);
+			}
+		}
+		else
+		{
+			switch (newPPUstate)
+			{
+			case OAM_SEARCH:
+				lineBeingDrawn = (PPUclockCurFrame / 456);
+				MMU.write(LY, lineBeingDrawn);
+
+				updateViewPort();
+				fetchetTileNum =
+					(viewPort_X) / 8 + (((viewPort_Y + lineBeingDrawn) % 256) / 8) * 32;
+
+				if (lineBeingDrawn == 144)
+				{
+					//Update screen
+					SDL_RenderPresent(Renderer);
+
+					PPUstate = V_BLANK;
+					MMU.write(STAT, V_BLANK);
+				}
+				else
+				{
+					PPUstate = OAM_SEARCH;
+					MMU.write(STAT, OAM_SEARCH);
+				}
+				break;
+
+			case PIXEL_TRANSFER:
+				PPUstate = PIXEL_TRANSFER;
+				MMU.write(STAT, PIXEL_TRANSFER);
+				break;
+
+			case H_BLANK:
+				renderLine();
+
+				PPUstate = H_BLANK;
+				MMU.write(STAT, H_BLANK);
+				break;
+			}
+		}
+	}
+}
+
 PixelProcessingUnit::PixelProcessingUnit(MemoryManagementUnit &MMU, CentralProcessingUnit &CPU)
 	: MMU(MMU),
-	  CPU(CPU)
+	CPU(CPU)
 {
 	//Initialize SDL
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)

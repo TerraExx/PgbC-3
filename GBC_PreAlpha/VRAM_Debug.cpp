@@ -149,7 +149,7 @@ void VRAM_Debug::draw(unsigned short tileNum, unsigned char* rows, unsigned char
 	SDL_RenderPresent(gRenderer);
 }
 
-VRAM_Debug::VRAM_Debug()
+void VRAM_Debug::init()
 {
 	//Initialization flag
 	bool success = true;
@@ -202,6 +202,10 @@ VRAM_Debug::VRAM_Debug()
 			}
 		}
 	}
+}
+
+VRAM_Debug::VRAM_Debug()
+{
 }
 
 

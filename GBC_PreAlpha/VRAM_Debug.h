@@ -50,6 +50,8 @@ private:
 public:
 	void draw( unsigned short tileNum, unsigned char* rows, unsigned char bgp );
 
+	void init();
+
 	VRAM_Debug();
 	~VRAM_Debug();
 };

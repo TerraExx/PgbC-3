@@ -12,7 +12,6 @@ class MemoryManagementUnit
 {
 private:
 	Cartridge_Info cartInfo;
-	VRAM_Debug VRAM_D;
 
 	bool runningBootCode = true;
 	unsigned char *BP = nullptr;

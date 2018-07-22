@@ -84,7 +84,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Video_Debug.h">
-      <Filter>Source Files</Filter>
+      <Filter>Header Files\PPU</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

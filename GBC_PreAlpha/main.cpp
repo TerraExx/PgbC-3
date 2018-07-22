@@ -9,6 +9,7 @@
 bool DEBUG_PRINTOUT = false;
 
 BGD_Debug  BGD_1_D;
+VRAM_Debug VRAM_D;
 
 int main(int argc, char* argv[]) {
 	MemoryManagementUnit MMU;
@@ -35,12 +36,18 @@ int main(int argc, char* argv[]) {
 
 	delete[] cartridgeBase;
 
+#ifdef BGD_DEBUG
+	BGD_1_D.init();
+#endif
+#ifdef VRAM_DEBUG
+	VRAM_D.init();
+#endif
 	CPU.init();
 
 	while (1)
 	{
 		CPU.step();
-		PPU.step();
+		PPU.step_try_2();
 	}
 
 	return 0;

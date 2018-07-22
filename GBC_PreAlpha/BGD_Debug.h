@@ -50,6 +50,8 @@ public:
 	void drawBg(unsigned short tileNum, unsigned char* rows, unsigned char bgp);
 	void drawView(unsigned char posX, unsigned char posY);
 
+	void init();
+
 	BGD_Debug();
 	~BGD_Debug();
 };

@@ -145,7 +145,7 @@ void BGD_Debug::drawView(unsigned char posX, unsigned char posY)
 	SDL_RenderPresent(RendererBg);
 }
 
-BGD_Debug::BGD_Debug()
+void BGD_Debug::init()
 {
 	//Initialization flag
 	bool success = true;
@@ -198,6 +198,10 @@ BGD_Debug::BGD_Debug()
 			}
 		}
 	}
+}
+
+BGD_Debug::BGD_Debug()
+{
 }
 
 

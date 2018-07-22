@@ -203,21 +203,25 @@ void MemoryManagementUnit::write(unsigned short address, unsigned char value)
 	{
 		baseCRAM.at(0)[address - CRAM_OFFSET] = value;
 
+#ifdef VRAM_DEBUG
 		// ReDraw Tile
 		VRAM_D.draw((address - CRAM_OFFSET) / 0x10
 				   , baseCRAM[0] + 0x10 * ((address - CRAM_OFFSET) / 0x10)
 			       , getReg(BGP)
 		           );
+#endif
 	}
 	else if (address < BGD2_OFFSET)
 	{
 		baseBGD1.at(0)[address - BGD1_OFFSET] = value;
 
+#ifdef BGD_DEBUG
 		// ReDraw Background
 		BGD_1_D.drawBg( address - BGD1_OFFSET
 				      , baseCRAM[0] + 0x10 * value
 				      , getReg(BGP)
 		              );
+#endif
 	}
 	else if (address < ERAM_OFFSET)
 	{
@@ -233,7 +237,7 @@ void MemoryManagementUnit::write(unsigned short address, unsigned char value)
 	}
 	else if (address < ECHO_RAM_OFFSET)
 	{
-		baseIRAM_n.at(IROM_banks)[address - IROM_Bn_OFFSET] = value;
+		baseIRAM_n.at(selected_IROM_bank)[address - IROM_Bn_OFFSET] = value;
 	}
 	else if (address < OAM_OFFSET)
 	{
@@ -246,7 +250,7 @@ void MemoryManagementUnit::write(unsigned short address, unsigned char value)
 	else if (address < IOREG_OFFSET)
 	{
 		std::cout << "Writing to unusable memory\n";
-		exit(1);
+		//exit(1);
 	}
 	else if (address < ZP_OFFSET)
 	{
@@ -299,7 +303,7 @@ unsigned char MemoryManagementUnit::read(unsigned short address)
 	}
 	else if (address < ECHO_RAM_OFFSET)
 	{
-		value = baseIRAM_n.at(IROM_banks)[address - IROM_Bn_OFFSET];
+		value = baseIRAM_n.at(selected_IROM_bank)[address - IROM_Bn_OFFSET];
 	}
 	else if (address < OAM_OFFSET)
 	{

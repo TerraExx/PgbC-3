@@ -54,15 +54,20 @@ private:
 		INVALID_BG = 0xFF
 	};
 
-	const unsigned char H_BLANK_LAST_CLOCK = 203;
-	const unsigned char V_BLANK_LAST_CLOCK = 70224 - (H_BLANK_LAST_CLOCK + OAM_LAST_CLOCK + PIXEL_TRANSFER_LAST_CLOCK) * H_LINES;
-	const unsigned char OAM_LAST_CLOCK = 79;
-	const unsigned char PIXEL_TRANSFER_LAST_CLOCK = 172;
+	const unsigned int FRAME_LAST_CLOCK = 70224;
 
-	const unsigned char FRAME_LAST_CLOCK = 70224;
+	//const unsigned char H_BLANK_LAST_CLOCK = 203;
+	//const unsigned char V_BLANK_LAST_CLOCK = FRAME_LAST_CLOCK - (H_BLANK_LAST_CLOCK + OAM_LAST_CLOCK + PIXEL_TRANSFER_LAST_CLOCK) * H_LINES;
+	//const unsigned char OAM_LAST_CLOCK = 79;
+	//const unsigned char PIXEL_TRANSFER_LAST_CLOCK = 172;
+	const unsigned int OAM_LAST_CLOCK = 79;
+	const unsigned int PIXEL_TRANSFER_LAST_CLOCK = OAM_LAST_CLOCK + 172;
+	const unsigned int H_BLANK_LAST_CLOCK = PIXEL_TRANSFER_LAST_CLOCK + 203;
+	const unsigned int V_BLANK_LAST_CLOCK = FRAME_LAST_CLOCK - (H_BLANK_LAST_CLOCK + OAM_LAST_CLOCK + PIXEL_TRANSFER_LAST_CLOCK) * H_LINES;
 
 	e_ppu_state PPUstate = OFF;
 	unsigned int PPUclock = 0;
+	unsigned int PPUclockCurFrame = 0;
 	unsigned int firstPixelClock = 0;
 
 	unsigned char viewPort_X = 0;
@@ -93,8 +98,10 @@ private:
 	void fetcherPushLine();
 
 	void drawPoint(e_bgp pallet, unsigned short x, unsigned short y);
+	void renderLine();
 public:
 	void step();
+	void step_try_2();
 
 	PixelProcessingUnit(MemoryManagementUnit &MMU, CentralProcessingUnit &CPU);
 	~PixelProcessingUnit();
